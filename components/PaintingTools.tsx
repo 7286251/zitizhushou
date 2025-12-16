@@ -57,7 +57,7 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
                   {/* Dynamic New Badge moved here */}
                   {tool.isNew && (
                     <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[9px] px-1.5 py-0.5 rounded-full shadow-sm animate-bounce border border-white whitespace-nowrap">
-                      New
+                      2026 New
                     </span>
                   )}
                 </div>

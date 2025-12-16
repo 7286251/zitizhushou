@@ -1,6 +1,10 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Content, Part } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAiClient = () => {
+  // Lazy initialization to prevent "process is not defined" error during initial render in some environments
+  const apiKey = process.env.API_KEY;
+  return new GoogleGenAI({ apiKey: apiKey! });
+};
 
 const NEGATIVE_PROMPT_TEXT = "--no blur, no distortion, no artificial elements, no text, --无模糊，无扭曲，无渐变，无摄影元素，无真实纹理，无复杂背景，无阴影（除了轮廓所暗示的深度），无插画，无有机形状，无散景，无噪点";
 
@@ -12,8 +16,9 @@ export const generateArtPrompt = async (
   customStyle: string
 ): Promise<string> => {
   const model = "gemini-2.5-flash";
+  const ai = getAiClient();
   
-  // Basic classification logic for specific keywords (Mocked logic as per prompt request)
+  // Basic classification logic for specific keywords
   let additionalContext = "";
   if (text1.includes("双11") || text1.includes("领取") || text1.includes("下单")) {
     additionalContext += " 检测到电商关键词，请参考市面热门C4D大促风格，强调视觉冲击力和促销氛围。";
@@ -44,7 +49,7 @@ export const generateArtPrompt = async (
       model: model,
       contents: prompt,
     });
-    return response.text.trim();
+    return response.text?.trim() || "生成为空";
   } catch (error) {
     console.error("Error generating prompt:", error);
     return "生成失败，请检查网络或API Key。";
@@ -53,13 +58,13 @@ export const generateArtPrompt = async (
 
 export const analyzeImageForPrompt = async (imageFile: File): Promise<{ chinese: string, english: string }> => {
   const model = "gemini-2.5-flash";
+  const ai = getAiClient();
 
   // Convert File to Base64
   const base64Data = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
-      // Remove data URL prefix (e.g., "data:image/jpeg;base64,")
       const base64 = result.split(',')[1]; 
       resolve(base64);
     };
@@ -98,10 +103,9 @@ export const analyzeImageForPrompt = async (imageFile: File): Promise<{ chinese:
       }
     });
 
-    const jsonText = response.text.trim();
+    const jsonText = response.text?.trim() || "{}";
     const result = JSON.parse(jsonText);
     
-    // Clean up if negative prompt leaked in (double check)
     let eng = result.english || "";
     let chi = result.chinese || "";
 
@@ -115,5 +119,34 @@ export const analyzeImageForPrompt = async (imageFile: File): Promise<{ chinese:
   } catch (error) {
     console.error("Error analyzing image:", error);
     return { chinese: "反推失败", english: "Reverse engineering failed" };
+  }
+};
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+}
+
+export const getSmartAgentResponse = async (history: ChatMessage[], newMessage: string): Promise<string> => {
+  const model = "gemini-2.5-flash";
+  const ai = getAiClient();
+
+  try {
+    const chat = ai.chats.create({
+      model: model,
+      history: history.map(msg => ({
+        role: msg.role,
+        parts: [{ text: msg.text }] as Part[],
+      })),
+      config: {
+        systemInstruction: "你是一个专业的AI绘画提示词智能体（Smart Agent）。\n你的核心任务是：帮助用户优化、生成或完善Midjourney/Stable Diffusion的提示词。\n你必须使用中文与用户交流，但生成的提示词部分应该是英文（因为AI绘画工具通常使用英文）。\n\n原则：\n1. 只做输出提示词为主，不要试图自己生成图片（你没有绘画能力）。\n2. 当用户描述一个画面时，帮他转化为结构化的Prompt：[主体] + [环境] + [风格] + [参数]。\n3. 语气专业、热情，带有艺术感。\n4. 如果用户需求模糊，请引导询问细节（如：风格、光影、构图）。"
+      }
+    });
+
+    const response = await chat.sendMessage({ message: newMessage });
+    return response.text?.trim() || "智能体暂时无法回应";
+  } catch (error) {
+    console.error("Chat error:", error);
+    return "智能体连接中断，请稍后再试。";
   }
 };

@@ -28,7 +28,7 @@ export enum AppTheme {
   PINK_PLUSH = 'pink_plush',
 }
 
-export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent';
+export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'about';
 
 export interface PromptResult {
   text: string;

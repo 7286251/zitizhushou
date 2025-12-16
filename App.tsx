@@ -5,6 +5,8 @@ import TextCreator from './components/TextCreator';
 import ImageReverse from './components/ImageReverse';
 import WallpaperGallery from './components/WallpaperGallery';
 import PaintingTools from './components/PaintingTools';
+import SmartAgent from './components/SmartAgent';
+import AboutUs from './components/AboutUs';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import Typewriter from './components/Typewriter';
 
@@ -64,7 +66,7 @@ const App: React.FC = () => {
               <div className="w-1 h-12 bg-yellow-600 mx-auto"></div>
               <div className="w-12 md:w-16 h-16 md:h-20 bg-gradient-to-b from-red-600 to-red-800 rounded-lg shadow-xl border-2 border-yellow-400 flex items-center justify-center relative">
                  <div className="absolute -inset-1 border border-yellow-500/50 rounded-lg"></div>
-                 <span className="text-xl md:text-2xl text-yellow-300 font-serif font-bold drop-shadow-md">福</span>
+                 <span className="text-xl md:text-2xl text-yellow-300 font-serif font-bold drop-shadow-md">马</span>
                  {/* Tassel */}
                  <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
                     <div className="w-1 h-3 bg-yellow-600"></div>
@@ -88,6 +90,25 @@ const App: React.FC = () => {
                  </div>
               </div>
            </div>
+
+           {/* Vertical Couplets (Desktop Only) */}
+           {/* Left Couplet: Golden horse gallops to welcome wealth */}
+           <div className="hidden xl:flex fixed top-1/2 left-8 -translate-y-1/2 z-10 flex-col gap-4">
+              <div className="bg-[#b30000] border-2 border-[#FFD700] p-3 rounded-lg shadow-[0_10px_20px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-300">
+                 <div className="flex flex-col items-center gap-2 text-[#FFD700] font-serif font-bold text-2xl" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>
+                    <span>金</span><span>马</span><span>奔</span><span>腾</span><span>迎</span><span>富</span><span>贵</span>
+                 </div>
+              </div>
+           </div>
+
+           {/* Right Couplet: Wealth rolls into the home */}
+           <div className="hidden xl:flex fixed top-1/2 right-8 -translate-y-1/2 z-10 flex-col gap-4">
+              <div className="bg-[#b30000] border-2 border-[#FFD700] p-3 rounded-lg shadow-[0_10px_20px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-300">
+                 <div className="flex flex-col items-center gap-2 text-[#FFD700] font-serif font-bold text-2xl" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>
+                     <span>财</span><span>源</span><span>滚</span><span>滚</span><span>进</span><span>家</span><span>门</span>
+                 </div>
+              </div>
+           </div>
         </>
       )}
 
@@ -96,10 +117,12 @@ const App: React.FC = () => {
         {/* Banner for New Year */}
         {theme === AppTheme.NEW_YEAR_2026 && (
           <div className="flex justify-center mb-4 animate-pop px-4">
-            <div className="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-[#FFD700] px-6 py-1.5 rounded-full border-2 border-[#FFD700] shadow-[0_4px_10px_rgba(0,0,0,0.3)] flex items-center gap-2 transform hover:scale-105 transition-transform">
-               <span className="text-xl filter drop-shadow">🐎</span>
-               <span className="font-bold tracking-widest text-sm md:text-base text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-500" style={{textShadow: '0 2px 2px rgba(0,0,0,0.5)'}}>2026 马年大吉 · 财源广进</span>
-               <span className="text-xl filter drop-shadow">🐎</span>
+            <div className="bg-gradient-to-r from-red-900 via-red-700 to-red-900 text-[#FFD700] px-8 py-2 rounded-full border-2 border-[#FFD700] shadow-[0_4px_15px_rgba(255,0,0,0.4)] flex items-center gap-3 transform hover:scale-105 transition-transform cursor-default">
+               <span className="text-2xl filter drop-shadow animate-pulse">🐴</span>
+               <span className="font-bold tracking-widest text-sm md:text-lg text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-yellow-400 to-yellow-600" style={{textShadow: '0 2px 4px rgba(0,0,0,0.3)'}}>
+                 ✨ 2026 丙午马年 · 瑞马迎春 ✨
+               </span>
+               <span className="text-2xl filter drop-shadow animate-pulse">💰</span>
             </div>
           </div>
         )}
@@ -154,6 +177,13 @@ const App: React.FC = () => {
         >
           🤖 智能体
         </button>
+        {/* About Button */}
+        <button
+          onClick={() => setMode('about')}
+          className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base ${mode === 'about' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
+        >
+          ℹ️ 关于我们
+        </button>
       </nav>
 
       {/* Main Content Window */}
@@ -163,13 +193,8 @@ const App: React.FC = () => {
            {mode === 'reverse' && <ImageReverse theme={theme} />}
            {mode === 'wallpaper' && <WallpaperGallery theme={theme} />}
            {mode === 'painting' && <PaintingTools theme={theme} />}
-           {mode === 'smart_agent' && (
-             <div className={`p-6 ${config.cardClass} h-full flex flex-col items-center justify-center text-center animate-pop`}>
-               <div className="text-6xl mb-4 animate-bounce">🚧</div>
-               <h2 className={`text-3xl font-bold mb-2 ${config.textClass}`}>智能体功能开发中...</h2>
-               <p className="text-gray-500 text-lg">Waiting for update...</p>
-             </div>
-           )}
+           {mode === 'smart_agent' && <SmartAgent theme={theme} />}
+           {mode === 'about' && <AboutUs theme={theme} />}
         </div>
       </main>
 

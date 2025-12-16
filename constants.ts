@@ -408,16 +408,67 @@ export const WALLPAPER_PRESETS: WallpaperOption[] = [
      id: 'wp_horse_12',
      name: '2026 霓虹光影',
      prompt: '黑暗背景中，通过长曝光摄影光绘出的马的形状，线条流光溢彩（粉色、青色），光轨形成“2026”的残影，动态模糊，视觉冲击力。'
+  },
+  // --- 新增 2026 风格 (New Additions) ---
+  {
+     id: 'wp_horse_13',
+     name: '2026 青花瓷韵',
+     prompt: '2026马年壁纸，一只由精美青花瓷构成的马，表面绘制着传统的山水纹样，釉面光滑反光，背景是淡雅的水墨晕染，古典雅致，中国风。'
+  },
+  {
+     id: 'wp_horse_14',
+     name: '2026 机甲高达',
+     prompt: '2026高达模型风格，红白蓝经典配色的机甲战马，机械细节丰富，装甲分色，站立在格纳库中，背景是巨大的“2026”编号，日系科幻动漫风。'
+  },
+  {
+     id: 'wp_horse_15',
+     name: '2026 璀璨水晶',
+     prompt: '2026马年壁纸，一只通体透明的钻石水晶马，折射着七彩光芒，背景是深邃的丝绒蓝，散落着细碎的宝石，“2026”由水晶拼接而成，奢华高贵。'
+  },
+  {
+     id: 'wp_horse_16',
+     name: '2026 苏绣锦缎',
+     prompt: '中国传统苏绣风格，细腻的丝线绣出的骏马图，针脚清晰可见，丝绸光泽感，背景是金色的绸缎，寓意前程似锦，非遗文化。'
+  },
+  {
+     id: 'wp_horse_17',
+     name: '2026 乐高积木',
+     prompt: '由乐高积木拼搭而成的红色小马，背景是乐高城市，色彩鲜艳，塑料质感逼真，微距摄影，景深效果，充满童趣。'
+  },
+  {
+     id: 'wp_horse_18',
+     name: '2026 传统皮影',
+     prompt: '中国皮影戏风格，色彩艳丽的透明兽皮雕刻马，关节连接处清晰，幕布后透出暖黄色的灯光，展现民间艺术魅力，2026新年主题。'
+  },
+  {
+     id: 'wp_horse_19',
+     name: '2026 梵高星空',
+     prompt: '梵高《星月夜》油画风格，旋涡状的笔触构成奔跑的马，蓝黄色调，星空背景，充满后印象派的艺术气息，2026艺术壁纸。'
+  },
+  {
+     id: 'wp_horse_20',
+     name: '2026 敦煌神骏',
+     prompt: '敦煌壁画风格，九色鹿配色的神马，脚踏祥云，飘带飞舞，岩彩质感，斑驳的墙面纹理，沉稳大气，历史厚重感。'
+  },
+  {
+     id: 'wp_horse_21',
+     name: '2026 浮世绘浪',
+     prompt: '日本浮世绘风格，葛饰北斋《神奈川冲浪里》，巨大的海浪卷起形成马的形状，背景是富士山和红日，强烈的视觉冲击，2026。'
+  },
+  {
+     id: 'wp_horse_22',
+     name: '2026 像素世界',
+     prompt: '8-bit像素艺术风格，像素点构成的奔跑小马，复古游戏界面，背景是像素化的蓝天白云和金币，怀旧电子风，2026 START。'
   }
 ];
 
 export const THEME_CONFIG = {
   [AppTheme.NEW_YEAR_2026]: {
-    name: '2026新年',
-    // Richer, deeper Red for 2026 Horse Year. "China Red"
-    bgClass: 'bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#D7000F] via-[#A8000B] to-[#720007]',
+    name: '2026马年限定',
+    // brighter, more "wealthy" China Red
+    bgClass: 'bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#FF4D4D] via-[#DC143C] to-[#8B0000]',
     // Gold accented card, festive and premium
-    cardClass: 'bg-[#FFF8F0] border-2 border-[#FFD700] shadow-[0_0_25px_rgba(255,215,0,0.6)] shadow-red-900/50 rounded-2xl',
+    cardClass: 'bg-[#FFF9F0] border-2 border-[#FFD700] shadow-[0_0_30px_rgba(255,215,0,0.4)] shadow-red-900/40 rounded-2xl',
     textClass: 'text-[#8B0000]', // Deep red text
     buttonClass: 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#8B0000] font-bold border-2 border-[#FFFFE0] hover:from-[#FFA500] hover:to-[#FFD700] shadow-lg transform transition-transform active:scale-95',
     titleEffect: 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] text-[#FFD700]', // Gold text
