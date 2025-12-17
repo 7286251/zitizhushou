@@ -122,6 +122,87 @@ export const analyzeImageForPrompt = async (imageFile: File): Promise<{ chinese:
   }
 };
 
+export const analyzeImageForStoryboard = async (imageFile: File): Promise<string> => {
+  const model = "gemini-2.5-flash";
+  const ai = getAiClient();
+
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(imageFile);
+  });
+
+  const prompt = `
+  请分析这张图片的主体人物、服装特征、以及环境背景。
+  请生成一段简练、精准的英文描述，用于作为分镜生成的"参考基准"。
+  描述格式例如： "a futuristic female warrior wearing silver armor in a cyberpunk city street"
+  只返回这一段描述文字即可，不要JSON，不要其他废话。
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: {
+        parts: [
+          { inlineData: { mimeType: imageFile.type, data: base64Data } },
+          { text: prompt }
+        ]
+      }
+    });
+    return response.text?.trim() || "";
+  } catch (error) {
+    console.error("Error analyzing for storyboard:", error);
+    return "";
+  }
+};
+
+export const generateStoryboardPrompt = async (
+  subjectDescription: string, 
+  shotTypes: string[]
+): Promise<{ english: string, chinese: string }> => {
+  const model = "gemini-2.5-flash";
+  const ai = getAiClient();
+
+  // Clean up shot types, if "Auto" then let AI decide
+  const formattedShots = shotTypes.map((s, i) => `Shot ${String(i+1).padStart(2, '0')}: ${s === 'Auto' ? 'AI decides appropriate angle' : s}`);
+
+  const prompt = `
+  Role: Professional Storyboard Artist & AI Prompt Engineer.
+  Task: Create a Midjourney/Stable Diffusion prompt for a character sheet/storyboard based on the subject: "${subjectDescription}".
+
+  Requirements:
+  1. Header MUST be strictly: "Based on ${subjectDescription}, generate a cohesive 3x3 grid image containing 9 different camera shots in the same environment, strictly maintaining consistency of character/object, clothing, and lighting, 8K resolution, 16:9 aspect ratio."
+  2. You must provide 9 distinct shots. 
+  3. Use the user's preferred shot types if specified: ${JSON.stringify(formattedShots)}. If "AI decides", choose varied and cinematic angles (e.g., Close-up, Wide shot, Side profile, Back view, Overhead, Low angle, etc.).
+  4. Output must be a JSON object with 'english' and 'chinese' keys.
+  
+  Example Output JSON Structure:
+  {
+    "english": "Based on [subject]... aspect ratio.\\nShot 01: [Shot Type], [Action/Detail]...\\n...\\nShot 09: ...",
+    "chinese": "基于 [主体]... 16:9画幅。\\n镜头01: [景别], [动作/细节]...\\n...\\n镜头09: ..."
+  }
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: prompt,
+      config: { responseMimeType: "application/json" }
+    });
+    
+    const text = response.text?.trim() || "{}";
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("Error generating storyboard:", error);
+    return { english: "Generation failed.", chinese: "生成失败。" };
+  }
+};
+
 export interface ChatMessage {
   role: 'user' | 'model';
   text: string;

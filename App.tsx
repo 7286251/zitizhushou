@@ -6,7 +6,8 @@ import ImageReverse from './components/ImageReverse';
 import WallpaperGallery from './components/WallpaperGallery';
 import PaintingTools from './components/PaintingTools';
 import SmartAgent from './components/SmartAgent';
-import AboutUs from './components/AboutUs';
+import StoryboardCreator from './components/StoryboardCreator';
+import GridSplitter from './components/GridSplitter'; // Added import
 import ThemeSwitcher from './components/ThemeSwitcher';
 import Typewriter from './components/Typewriter';
 
@@ -34,20 +35,6 @@ const App: React.FC = () => {
     return {}; 
   };
 
-  const handleContactClick = () => {
-    const qq = "307779523";
-    // Check if user is on mobile
-    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // Mobile Protocol
-      window.location.href = `mqqwpa://im/chat?chat_type=wpa&uin=${qq}&version=1&src_type=web&web_src=oicqzone.com`;
-    } else {
-      // Desktop Protocol or PC QQ
-      window.location.href = `tencent://message/?uin=${qq}&Site=小渝児&Menu=yes`;
-    }
-  };
-
   const typewriterTexts = [
     "提示词智能体写词大师",
     "本站专注AI艺术字提示词生成",
@@ -66,7 +53,10 @@ const App: React.FC = () => {
               <div className="w-1 h-12 bg-yellow-600 mx-auto"></div>
               <div className="w-12 md:w-16 h-16 md:h-20 bg-gradient-to-b from-red-600 to-red-800 rounded-lg shadow-xl border-2 border-yellow-400 flex items-center justify-center relative">
                  <div className="absolute -inset-1 border border-yellow-500/50 rounded-lg"></div>
-                 <span className="text-xl md:text-2xl text-yellow-300 font-serif font-bold drop-shadow-md">马</span>
+                 <div className="flex flex-col items-center justify-center leading-none gap-0.5 text-yellow-300 font-serif font-bold drop-shadow-md py-1">
+                    <span className="text-sm md:text-base">马</span>
+                    <span className="text-sm md:text-base">到</span>
+                 </div>
                  {/* Tassel */}
                  <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
                     <div className="w-1 h-3 bg-yellow-600"></div>
@@ -81,7 +71,10 @@ const App: React.FC = () => {
               <div className="w-1 h-8 bg-yellow-600 mx-auto"></div>
               <div className="w-12 md:w-16 h-16 md:h-20 bg-gradient-to-b from-red-600 to-red-800 rounded-lg shadow-xl border-2 border-yellow-400 flex items-center justify-center relative">
                  <div className="absolute -inset-1 border border-yellow-500/50 rounded-lg"></div>
-                 <span className="text-xl md:text-2xl text-yellow-300 font-serif font-bold drop-shadow-md">财</span>
+                 <div className="flex flex-col items-center justify-center leading-none gap-0.5 text-yellow-300 font-serif font-bold drop-shadow-md py-1">
+                    <span className="text-sm md:text-base">成</span>
+                    <span className="text-sm md:text-base">功</span>
+                 </div>
                  {/* Tassel */}
                  <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
                     <div className="w-1 h-3 bg-yellow-600"></div>
@@ -153,6 +146,18 @@ const App: React.FC = () => {
           ✍️ 艺术字创作
         </button>
         <button
+          onClick={() => setMode('storyboard')}
+          className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base ${mode === 'storyboard' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
+        >
+          🎬 分镜生成
+        </button>
+        <button
+          onClick={() => setMode('grid_splitter')}
+          className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base ${mode === 'grid_splitter' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
+        >
+          🧩 九宫格切图
+        </button>
+        <button
           onClick={() => setMode('reverse')}
           className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base ${mode === 'reverse' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
         >
@@ -177,37 +182,23 @@ const App: React.FC = () => {
         >
           🤖 智能体
         </button>
-        {/* About Button */}
-        <button
-          onClick={() => setMode('about')}
-          className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base ${mode === 'about' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
-        >
-          ℹ️ 关于我们
-        </button>
       </nav>
 
       {/* Main Content Window */}
-      <main className="flex-1 px-4 pb-20 overflow-hidden flex justify-center">
-        <div className="w-full max-w-5xl h-full relative">
+      <main className="flex-1 overflow-hidden flex justify-center px-4 pb-20">
+        <div className="w-full h-full relative max-w-5xl">
            {mode === 'creation' && <TextCreator theme={theme} />}
            {mode === 'reverse' && <ImageReverse theme={theme} />}
            {mode === 'wallpaper' && <WallpaperGallery theme={theme} />}
            {mode === 'painting' && <PaintingTools theme={theme} />}
            {mode === 'smart_agent' && <SmartAgent theme={theme} />}
-           {mode === 'about' && <AboutUs theme={theme} />}
+           {mode === 'storyboard' && <StoryboardCreator theme={theme} />}
+           {mode === 'grid_splitter' && <GridSplitter theme={theme} />}
         </div>
       </main>
 
       {/* Floating Buttons */}
       <ThemeSwitcher currentTheme={theme} setTheme={setTheme} />
-      
-      <button 
-        onClick={handleContactClick}
-        className="fixed bottom-4 left-4 z-50 bg-[#12B7F5] text-white px-4 py-2 rounded-full shadow-lg font-bold hover:bg-[#0da0d6] transition-transform hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="group-hover:rotate-12 transition-transform"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
-        联系作者
-      </button>
 
       {/* Background Decor (Only for New Year Theme) */}
       {theme === AppTheme.NEW_YEAR_2026 && (

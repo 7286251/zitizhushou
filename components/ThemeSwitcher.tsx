@@ -11,6 +11,8 @@ const ThemeSwitcher: React.FC<Props> = ({ currentTheme, setTheme }) => {
     { id: AppTheme.NEW_YEAR_2026, label: '🧨 新年', color: 'bg-red-500' },
     { id: AppTheme.RETRO_DESKTOP, label: '💾 复古', color: 'bg-blue-400' },
     { id: AppTheme.PINK_PLUSH, label: '🧸 软萌', color: 'bg-pink-400' },
+    { id: AppTheme.DOPAMINE, label: '🌈 多巴胺', color: 'bg-purple-500' },
+    { id: AppTheme.NEO_BRUTALISM, label: '◼️ 粗野', color: 'bg-black border border-white' },
   ];
 
   return (
