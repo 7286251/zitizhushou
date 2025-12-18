@@ -1,7 +1,15 @@
 import { StyleOption, WallpaperOption, AppTheme, PaintingTool } from './types';
 
-// ... STYLE_OPTIONS 保持不变 ...
+export const APP_NOTICES = [
+  "🔥 [核心优化] 图文发布中心已支持 AI 视觉解析：上传参考图即可自动填充产品名与场景描述，效率翻倍！",
+  "💧 [海量资源] 去水印工具库补完计划：已收录 100+ 款全网免费 AI 视频/图片去水印工具，真实有效。",
+  "🧧 [马年限定] 2026 艺术字引擎正式发布：新增马年剪纸、鎏金神驹等 20+ 款节日限定爆款风格。",
+  "🎬 [分镜升级] 分镜提示词工具新增 3x3 专业网格配置，支持多景别自动生成，助力导演级创作。",
+  "🚀 [体验提升] 优化了 Gemini 3-Flash 模型响应速度，艺术字生成更流畅，多屏适配更完美。"
+];
+
 export const STYLE_OPTIONS: StyleOption[] = [
+  // --- 爆款封面 (Hit Covers) ---
   { id: 'cover_red_1', name: '小红书-多巴胺', category: '爆款封面', description: '高饱和度配色，Y2K酸性风格，大标题，高点击率' },
   { id: 'cover_red_2', name: '小红书-极简白', category: '爆款封面', description: '纯白背景，黑色衬线字体，高级感，留白艺术' },
   { id: 'cover_red_3', name: '小红书-磨砂玻璃', category: '爆款封面', description: '毛玻璃背景，悬浮卡片，iOS风格，现代UI感' },
@@ -166,7 +174,6 @@ export const PAINTING_TOOLS: PaintingTool[] = [
   })
 ];
 
-// ... THEME_CONFIG 等保持不变 ...
 export const THEME_CONFIG: Record<AppTheme, {
   bgClass: string;
   cardClass: string;

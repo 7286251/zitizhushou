@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppTheme, AppMode } from './types';
-import { THEME_CONFIG } from './constants';
+import { THEME_CONFIG, APP_NOTICES } from './constants';
 import TextCreator from './components/TextCreator';
 import ImageReverse from './components/ImageReverse';
 import WallpaperGallery from './components/WallpaperGallery';
@@ -42,6 +42,48 @@ const App: React.FC = () => {
     "爆款文案生成 | 一键同步发布"
   ];
 
+  const NoticeBar = () => {
+    const isNewYear = theme === AppTheme.NEW_YEAR_2026;
+    
+    // Label styles
+    const labelBg = isNewYear 
+      ? "bg-gradient-to-r from-red-600 to-red-800 text-yellow-300" 
+      : "bg-blue-600 text-white";
+    
+    // Bar container styles
+    const barBg = isNewYear
+      ? "bg-yellow-50/95 border-y border-yellow-200 shadow-sm"
+      : "bg-white/90 border-y border-gray-100 shadow-sm";
+
+    const textColor = isNewYear ? "text-red-900" : "text-gray-600";
+
+    return (
+      <div className={`w-full relative flex items-center h-10 overflow-hidden z-20 ${barBg} backdrop-blur-md`}>
+        {/* Fixed Independent Label */}
+        <div className={`absolute left-0 top-0 bottom-0 px-4 md:px-6 flex items-center gap-2 z-30 font-black text-xs md:text-sm tracking-widest shadow-[10px_0_15px_rgba(0,0,0,0.05)] ${labelBg}`}>
+          <span className="animate-pulse">{isNewYear ? "🧨" : "📢"}</span>
+          最新公告
+          <div className="absolute right-[-10px] top-0 bottom-0 w-[10px] bg-inherit [clip-path:polygon(0%_0%,100%_50%,0%_100%)]"></div>
+        </div>
+
+        {/* Scrolling Content - Start after label area */}
+        <div className="flex-1 ml-[110px] md:ml-[140px] h-full flex items-center overflow-hidden">
+          <div className="flex animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused] whitespace-nowrap items-center h-full">
+            {APP_NOTICES.concat(APP_NOTICES).map((notice, i) => (
+              <span key={i} className={`px-12 text-xs md:text-sm font-bold flex items-center h-full ${textColor}`}>
+                <span className="mr-2 text-blue-500 opacity-30">/ /</span>
+                {notice}
+              </span>
+            ))}
+          </div>
+        </div>
+        
+        {/* Right side fade effect */}
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-inherit to-transparent pointer-events-none z-10"></div>
+      </div>
+    );
+  };
+
   return (
     <div className={`min-h-screen transition-colors duration-500 ${config.bgClass} flex flex-col overflow-hidden`} style={getBgStyle()}>
       
@@ -76,7 +118,7 @@ const App: React.FC = () => {
         </>
       )}
 
-      <header className="pt-8 pb-4 text-center z-10 relative">
+      <header className="pt-8 pb-2 text-center z-10 relative">
         <h1 className={`text-4xl md:text-5xl font-black tracking-wider mb-2 ${config.accentColor} ${config.titleEffect}`}>
           <span className="inline-block animate-jelly">小</span>
           <span className="inline-block animate-jelly">渝</span>
@@ -86,12 +128,14 @@ const App: React.FC = () => {
           <span className="inline-block animate-jelly">工</span>
           <span className="inline-block animate-jelly">场</span>
         </h1>
-        <div className={`text-lg md:text-xl font-mono opacity-90 ${theme === AppTheme.NEW_YEAR_2026 ? 'text-[#fffcf5]' : 'text-gray-600'} h-8`}>
+        <div className={`text-lg md:text-xl font-mono opacity-90 ${theme === AppTheme.NEW_YEAR_2026 ? 'text-[#fffcf5]' : 'text-gray-600'} h-8 mb-2`}>
           <Typewriter texts={typewriterTexts} typeSpeed={100} deleteSpeed={30} pauseDuration={2500} />
         </div>
       </header>
 
-      <nav className="flex justify-center gap-2 md:gap-4 px-4 mb-2 z-10 flex-wrap overflow-x-auto no-scrollbar">
+      <NoticeBar />
+
+      <nav className="flex justify-center gap-2 md:gap-4 px-4 mb-2 z-10 flex-wrap overflow-x-auto no-scrollbar pt-4">
         <button
           onClick={() => setMode('publisher')}
           className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base whitespace-nowrap ${mode === 'publisher' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
