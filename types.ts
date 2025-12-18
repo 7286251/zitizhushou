@@ -20,7 +20,7 @@ export interface PaintingTool {
   scheme?: string; // App Protocol Scheme
   tag?: string; // Status/Region tags
   isNew?: boolean; // New badge
-  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility'; // New Category field
+  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility' | 'watermark'; // Added watermark
 }
 
 export enum AppTheme {
@@ -31,7 +31,7 @@ export enum AppTheme {
   NEO_BRUTALISM = 'neo_brutalism',
 }
 
-export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter'; // Added grid_splitter
+export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher';
 
 export interface PromptResult {
   text: string;
@@ -46,4 +46,12 @@ export interface ImageAnalysisResult {
 
 export interface StoryboardConfig {
   shots: string[]; // Array of 9 shot types
+}
+
+export type PlatformType = 'xhs' | 'douyin' | 'kuaishou' | 'channels';
+
+export interface PublishContent {
+  title: string;
+  article: string;
+  hashtags: string[];
 }

@@ -15,6 +15,7 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
     { id: 'all', label: '全部' },
     { id: 'video', label: '✨ AI视频' },
     { id: 'drawing', label: '🎨 AI绘画' },
+    { id: 'watermark', label: '💧 去水印' }, // Added watermark category
     { id: 'prompt', label: '📝 提示词' },
     { id: 'reverse', label: '🔍 图像反推' },
     { id: 'model', label: '🤖 大模型' },
@@ -38,7 +39,7 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
       return 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_2px_8px_rgba(239,68,68,0.3)] border border-red-400/30';
     }
     if (tag.includes('国外') || tag.includes('海外')) {
-      return 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] border border-blue-400/30';
+      return 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-[0_2px_8_rgba(79,70,229,0.3)] border border-blue-400/30';
     }
     return 'bg-gray-100 text-gray-600 border border-gray-200';
   };
@@ -92,12 +93,12 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4 overflow-x-auto no-scrollbar">
         {categories.map(cat => (
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border ${
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border whitespace-nowrap ${
               activeCategory === cat.id
                 ? 'bg-blue-600 text-white shadow-md transform scale-105 border-blue-700'
                 : 'bg-white/60 text-gray-600 hover:bg-white border-gray-200 hover:border-blue-300'
