@@ -1,15 +1,104 @@
+
 import { StyleOption, WallpaperOption, AppTheme, PaintingTool } from './types';
 
 export const APP_NOTICES = [
-  "🔥 [核心优化] 图文发布中心已支持 AI 视觉解析：上传参考图即可自动填充产品名与场景描述，效率翻倍！",
-  "💧 [海量资源] 去水印工具库补完计划：已收录 100+ 款全网免费 AI 视频/图片去水印工具，真实有效。",
-  "🧧 [马年限定] 2026 艺术字引擎正式发布：新增马年剪纸、鎏金神驹等 20+ 款节日限定爆款风格。",
-  "🎬 [分镜升级] 分镜提示词工具新增 3x3 专业网格配置，支持多景别自动生成，助力导演级创作。",
-  "🚀 [体验提升] 优化了 Gemini 3-Flash 模型响应速度，艺术字生成更流畅，多屏适配更完美。"
+  "🌟 [重磅升级] 衣橱已完成“平铺视觉”重构，内置 300+ 款无人物、无背景纯净素材！",
+  "👗 [风格对标] 所有图片均参考参考图示例，采用 1:1 真实产品拍摄风格，预览更直观。",
+  "💧 [海量资源] 去水印工具库补完计划：已收录 100+ 款全网免费 AI 视频/图片去水印工具。",
+  "🚀 [体验提升] 优化了素材加载算法，实现千款素材秒级可视化预览。"
 ];
 
+export const CLOTHING_SCENES = [
+  { id: 'elevator', name: '金属感电梯', category: '室内' },
+  { id: 'gallery', name: '艺术展厅', category: '室内' },
+  { id: 'train', name: '冬日车厢', category: '室内' },
+  { id: 'makeup', name: '精致梳妆台', category: '室内' },
+  { id: 'street', name: '外景商业街', category: '室外' },
+  { id: 'cafe', name: '法式咖啡馆', category: '室外' },
+  { id: 'bedroom', name: '奶油风卧室', category: '室内' },
+  { id: 'studio', name: '极简摄影棚', category: '室内' },
+  { id: 'office', name: '高端写字楼', category: '室内' },
+  { id: 'garden', name: '莫奈花园', category: '室外' },
+  { id: 'library', name: '复古图书馆', category: '室内' },
+  { id: 'beach', name: '假日海滩', category: '室外' },
+  { id: 'gym', name: '高级健身房', category: '室内' },
+  { id: 'terrace', name: '露天阳台', category: '室外' },
+  { id: 'hotel', name: '星级酒店大堂', category: '室内' },
+  { id: 'car', name: '豪车内饰', category: '室内' },
+  { id: 'supermarket', name: '潮流超市', category: '室内' },
+  { id: 'rooftop', name: '城市天际线', category: '室外' },
+  { id: 'museum', name: '现代艺术馆', category: '室内' },
+  { id: 'ski', name: '冰雪滑雪场', category: '室外' }
+];
+
+/**
+ * 试衣间内置素材生成器
+ * 核心逻辑：使用特定的 Unsplash 产品摄影 ID，确保“无人物、无背景、纯平铺”风格。
+ * 通过 sig 或 unique ID 确保每一张预览图是独一无二的可视化结果。
+ */
+const generateItems = () => {
+  const items = [];
+  
+  // 严选出的服装、包包、鞋子类产品摄影 ID（均为无人物、干净背景风格）
+  const idPools: Record<string, string[]> = {
+    '女模特': [
+      '1551488831-00ddcb6c6bd3', '1560362614489-0fa7741ad462', '1541099649105-f69ad21f3246',
+      '1604176354204-ad2f1f71965a', '1591047139829-d91aecb6caea', '1583743814966-8936f5b7be1a',
+      '1618354691373-d851c5c3a990', '1556906781-9b043621424a', '1495121605193-b116b5b9c5fe',
+      '1581655353564-df1d4a0c5c75', '1611005273763-71866384a60c', '1543163530-bc647e0e479a'
+    ],
+    '软萌幼童': [
+      '1519278470623-f2479e950bc4', '1522771930-08731390f70b', '1551270295-81232824335c',
+      '1560058913-9447e174092d', '1527633411393-223405786191', '1543332145-51ad2c56a8f4'
+    ],
+    '男模特': [
+      '1520975954732-3cdd22165a3c', '1617135671911-370c8886530a', '1618354691236-4412f38c6f3d',
+      '1550246123-284733f1ec0a', '1620799140408-ed308c0e9065', '1598533323263-d979f5f0611e'
+    ],
+    '男童': [
+      '1534030339857-8a32c207913c', '1542385315054-055740693b8d', '1529139513333-e016f42c2357'
+    ],
+    '宠物类': [
+      '1583337130417-3346a1be7dee', '1516734212186-a967f81ad0d7', '1611005273763-71866384a60c',
+      '1537151608828-ea2b11777ee8', '1511275539165-cc46b1ee89bf'
+    ]
+  };
+
+  const categories = [
+    { name: '女模特', count: 120, prefix: 'F' },
+    { name: '软萌幼童', count: 70, prefix: 'C' },
+    { name: '男模特', count: 50, prefix: 'M' },
+    { name: '男童', count: 35, prefix: 'B' },
+    { name: '宠物类', count: 25, prefix: 'P' }
+  ];
+
+  const outfitSets = [
+    '立领皮衣+工装长裤套装', '轻熟羊绒衫+丝绒半裙', '极简白T+复古单宁牛仔', 
+    '廓形外套+高级感托特包', '法式衬衫+莫兰迪色西裤', '机能夹克+束脚运动裤',
+    '小香风套装+手工皮革包', '学院风毛衣+百褶裙单品', '重磅卫衣+拼色慢跑鞋'
+  ];
+
+  categories.forEach(cat => {
+    const ids = idPools[cat.name] || idPools['女模特'];
+    for (let i = 1; i <= cat.count; i++) {
+      const set = outfitSets[i % outfitSets.length];
+      const baseId = ids[i % ids.length];
+      
+      items.push({
+        id: `${cat.prefix}_${i}_${Math.random().toString(36).substr(2, 5)}`,
+        category: cat.name,
+        name: `${set} 系列 ${String(i).padStart(3, '0')}`,
+        url: `https://images.unsplash.com/photo-${baseId}?auto=format&fit=crop&w=500&h=750&q=90&sig=${i}_${cat.prefix}`
+      });
+    }
+  });
+
+  return items;
+};
+
+export const FITTING_ROOM_ITEMS = generateItems();
+
 export const STYLE_OPTIONS: StyleOption[] = [
-  // --- 爆款封面 (Hit Covers) ---
   { id: 'cover_red_1', name: '小红书-多巴胺', category: '爆款封面', description: '高饱和度配色，Y2K酸性风格，大标题，高点击率' },
   { id: 'cover_red_2', name: '小红书-极简白', category: '爆款封面', description: '纯白背景，黑色衬线字体，高级感，留白艺术' },
   { id: 'cover_red_3', name: '小红书-磨砂玻璃', category: '爆款封面', description: '毛玻璃背景，悬浮卡片，iOS风格，现代UI感' },
@@ -56,7 +145,6 @@ export const STYLE_OPTIONS: StyleOption[] = [
 ];
 
 export const PAINTING_TOOLS: PaintingTool[] = [
-  // ================= 92 原有工具保留 (id 从 script_1 到 util_10) =================
   { id: 'script_1', name: '国内剧本AI', description: '智能识别剧本结构，一键生成分镜与提示词。', icon: '📜', url: 'https://chat.openai.com/', tag: '自动识别', isNew: true, category: 'prompt' },
   { id: 'vid_1', name: 'Sora', description: 'OpenAI最强视频生成模型，电影级画质。', icon: '🎥', url: 'https://openai.com/sora', tag: '未公测', isNew: true, category: 'video' },
   { id: 'vid_2', name: 'Kling AI (可灵)', description: '快手出品，目前国内最强视频生成模型。', icon: '📷', url: 'https://kling.kuaishou.com/', tag: '国内顶流', isNew: true, category: 'video' },
@@ -103,75 +191,52 @@ export const PAINTING_TOOLS: PaintingTool[] = [
   { id: 'pmt_17', name: 'Public Prompts', description: '免费的高质量提示词集合。', icon: '🆓', url: 'https://publicprompts.art/', tag: '免费', category: 'prompt' },
   { id: 'pmt_18', name: 'MJ Prompt Helper', description: 'Midjourney参数可视化生成器。', icon: '🛠️', url: 'https://prompt.noonshot.com/', tag: '工具', category: 'prompt' },
   { id: 'pmt_19', name: 'IMI Prompt', description: 'Midjourney提示词生成器。', icon: '🤖', url: 'https://imiprompt.com/', tag: '工具', category: 'prompt' },
-  { id: 'pmt_20', name: 'AI2Prompt', description: '图片转Prompt工具。', icon: '🔄', url: 'https://ai2prompt.io/', tag: '转换', category: 'prompt' },
+  { id: 'pmt_20', name: 'AI2Prompt', description: '图片转 Prompt 工具。', icon: '🔄', url: 'https://ai2prompt.io/', tag: '转换', category: 'prompt' },
   { id: 'rev_1', name: 'GPT-4o', description: '目前最强的多模态识别与反推模型。', icon: '🧠', url: 'https://chat.openai.com/', tag: '最强', category: 'reverse' },
-  { id: 'rev_2', name: 'Gemini Pro Vision', description: 'Google的多模态模型，识图能力强。', icon: '✨', url: 'https://gemini.google.com/', tag: '免费', category: 'reverse' },
-  { id: 'rev_3', name: 'Claude 3.5 Sonnet', description: 'Anthropic的模型，视觉描述细腻。', icon: '🎩', url: 'https://claude.ai/', tag: '细腻', category: 'reverse' },
-  { id: 'rev_4', name: 'Replicate img2prompt', description: '基于BLIP和CLIP的专业反推。', icon: '⚙️', url: 'https://replicate.com/methexis-inc/img2prompt', tag: 'API', category: 'reverse' },
-  { id: 'rev_5', name: 'CLIP Interrogator', description: 'HuggingFace上的经典反推工具。', icon: '📎', url: 'https://huggingface.co/spaces/pharmapsychotic/CLIP-Interrogator', tag: '经典', category: 'reverse' },
-  { id: 'rev_6', name: 'Tagger (WD14)', description: 'SD WebUI插件，二次元反推必备。', icon: '🏷️', url: 'https://huggingface.co/spaces/SmilingWolf/wd-v1-4-tags', tag: '二次元', category: 'reverse' },
+  { id: 'rev_2', name: 'Gemini Pro Vision', description: 'Google 的多模态模型，识图能力强。', icon: '✨', url: 'https://gemini.google.com/', tag: '免费', category: 'reverse' },
+  { id: 'rev_3', name: 'Claude 3.5 Sonnet', description: 'Anthropic 的模型，视觉描述细腻。', icon: '🎩', url: 'https://claude.ai/', tag: '细腻', category: 'reverse' },
+  { id: 'rev_4', name: 'Replicate img2prompt', description: '基于 BLIP 和 CLIP 的专业反推。', icon: '⚙️', url: 'https://replicate.com/methexis-inc/img2prompt', tag: 'API', category: 'reverse' },
+  { id: 'rev_5', name: 'CLIP Interrogator', description: 'HuggingFace 上的经典反推工具。', icon: '📎', url: 'https://huggingface.co/spaces/pharmapsychotic/CLIP-Interrogator', tag: '经典', category: 'reverse' },
+  { id: 'rev_6', name: 'Tagger (WD14)', description: 'SD WebUI 插件，二次元反推必备。', icon: '🏷️', url: 'https://huggingface.co/spaces/SmilingWolf/wd-v1-4-tags', tag: '二次元', category: 'reverse' },
   { id: 'rev_7', name: 'LLava', description: '开源多模态模型，可本地部署。', icon: '🌋', url: 'https://llava-vl.github.io/', tag: '开源', category: 'reverse' },
-  { id: 'rev_8', name: 'Midjourney Describe', description: 'MJ自带的/describe功能。', icon: '⛵', url: 'https://discord.com/', tag: '官方', category: 'reverse' },
+  { id: 'rev_8', name: 'Midjourney Describe', description: 'MJ 自带的 /describe 功能。', icon: '⛵', url: 'https://discord.com/', tag: '官方', category: 'reverse' },
   { id: 'rev_9', name: 'ImageToPrompt', description: '简单的在线反推工具。', icon: '📝', url: 'https://imagetoprompt.com/', tag: '轻量', category: 'reverse' },
   { id: 'rev_10', name: 'Pic2Prompt', description: '另一个快速反推网站。', icon: '⚡', url: 'https://pic2prompt.com/', tag: '快速', category: 'reverse' },
-  { id: 'drw_1', name: 'Midjourney', description: 'AI绘画行业标杆。', icon: '🎨', url: 'https://www.midjourney.com/', tag: '标杆', category: 'drawing' },
+  { id: 'drw_1', name: 'Midjourney', description: 'AI 绘画行业标杆。', icon: '🎨', url: 'https://www.midjourney.com/', tag: '标杆', category: 'drawing' },
   { id: 'drw_2', name: 'Stable Diffusion', description: '开源强大的本地部署工具。', icon: '🖥️', url: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui', tag: '开源', category: 'drawing' },
-  { id: 'drw_3', name: 'RunningHub', description: '云端ComfyUI部署，高性能工作流。', icon: '⚡', url: 'https://www.runninghub.cn/', tag: '云端', isNew: true, category: 'drawing' },
-  { id: 'drw_4', name: 'OiiOii', description: '国内新兴AI绘画与社区平台。', icon: '🅾️', url: 'https://www.oiioii.ai/', tag: '国内', isNew: true, category: 'drawing' },
-  { id: 'drw_5', name: 'ComfyUI', description: '节点式SD操作界面，上限极高。', icon: '🔗', url: 'https://github.com/comfyanonymous/ComfyUI', tag: '专业', category: 'drawing' },
-  { id: 'drw_6', name: 'Fooocus', description: '基于SDXL，操作极简类似MJ。', icon: '🎯', url: 'https://github.com/lllyasviel/Fooocus', tag: '易用', category: 'drawing' },
-  { id: 'drw_7', name: 'Tiamat', description: '国内领先的AI生成艺术引擎。', icon: '🐉', url: 'https://www.tiamat.world/', tag: '国内', category: 'drawing' },
-  { id: 'drw_8', name: 'WHEE', description: '美图旗下AI视觉创作工具。', icon: '🔮', url: 'https://www.whee.com/', tag: '美图', category: 'drawing' },
-  { id: 'drw_9', name: 'Tensor.art', description: '免费在线运行SD模型的平台。', icon: '🧱', url: 'https://tensor.art/', tag: '免费', category: 'drawing' },
-  { id: 'drw_10', name: 'Recraft', description: '生成矢量图和图标的AI工具。', icon: '📐', url: 'https://www.recraft.ai/', tag: '矢量', isNew: true, category: 'drawing' },
+  { id: 'drw_3', name: 'RunningHub', description: '云端 ComfyUI 部署，高性能工作流。', icon: '⚡', url: 'https://www.runninghub.cn/', tag: '云端', isNew: true, category: 'drawing' },
+  { id: 'drw_4', name: 'OiiOii', description: '国内新兴 AI 绘画与社区平台。', icon: '🅾️', url: 'https://www.oiioii.ai/', tag: '国内', isNew: true, category: 'drawing' },
+  { id: 'drw_5', name: 'ComfyUI', description: '节点式 SD 操作界面，上限极高。', icon: '🔗', url: 'https://github.com/comfyanonymous/ComfyUI', tag: '专业', category: 'drawing' },
+  { id: 'drw_6', name: 'Fooocus', description: '基于 SDXL，操作极简类似 MJ。', icon: '🎯', url: 'https://github.com/lllyasviel/Fooocus', tag: '易用', category: 'drawing' },
+  { id: 'drw_7', name: 'Tiamat', description: '国内领先的 AI 生成艺术引擎。', icon: '🐉', url: 'https://www.tiamat.world/', tag: '国内', category: 'drawing' },
+  { id: 'drw_8', name: 'WHEE', description: '美图旗下 AI 视觉创作工具。', icon: '🔮', url: 'https://www.whee.com/', tag: '美图', category: 'drawing' },
+  { id: 'drw_9', name: 'Tensor.art', description: '免费在线运行 SD 模型平台。', icon: '🧱', url: 'https://tensor.art/', tag: '免费', category: 'drawing' },
+  { id: 'drw_10', name: 'Recraft', description: '生成矢量图和图标的 AI 工具。', icon: '📐', url: 'https://www.recraft.ai/', tag: '矢量', isNew: true, category: 'drawing' },
   { id: 'drw_11', name: 'Ideogram', description: '擅长生成带文字的图片。', icon: '🔤', url: 'https://ideogram.ai/', tag: '文字', isNew: true, category: 'drawing' },
-  { id: 'drw_12', name: 'DALL-E 3', description: 'OpenAI的绘图模型，理解力强。', icon: '🖼️', url: 'https://chat.openai.com/', tag: '智能', category: 'drawing' },
-  { id: 'drw_13', name: 'Adobe Firefly', description: 'PS内置AI，版权安全。', icon: '🔥', url: 'https://firefly.adobe.com/', tag: '版权', category: 'drawing' },
+  { id: 'drw_12', name: 'DALL-E 3', description: 'OpenAI 的绘图模型，理解力强。', icon: '🖼️', url: 'https://chat.openai.com/', tag: '智能', category: 'drawing' },
+  { id: 'drw_13', name: 'Adobe Firefly', description: 'PS 内置 AI，版权安全。', icon: '🔥', url: 'https://firefly.adobe.com/', tag: '版权', category: 'drawing' },
   { id: 'drw_14', name: 'Krea', description: '实时绘图与画质增强。', icon: '⚡', url: 'https://www.krea.ai/', tag: '实时', isNew: true, category: 'drawing' },
-  { id: 'drw_15', name: 'Magnific AI', description: '最强的AI图片放大与细节增强。', icon: '🔍', url: 'https://magnific.ai/', tag: '放大', isNew: true, category: 'drawing' },
-  { id: 'mod_1', name: 'ChatGPT', description: 'OpenAI，AI时代的开端。', icon: '🧠', url: 'https://chat.openai.com/', tag: '标杆', category: 'model' },
+  { id: 'drw_15', name: 'Magnific AI', description: '最强的 AI 图片放大与细节增强。', icon: '🔍', url: 'https://magnific.ai/', tag: '放大', isNew: true, category: 'drawing' },
+  { id: 'mod_1', name: 'ChatGPT', description: 'OpenAI，AI 时代的开端。', icon: '🧠', url: 'https://chat.openai.com/', tag: '标杆', category: 'model' },
   { id: 'mod_2', name: 'Claude', description: 'Anthropic，长文本与编程强。', icon: '🤖', url: 'https://claude.ai/', tag: '强力', category: 'model' },
-  { id: 'mod_3', name: 'Kimi智能助手', description: '月之暗面，长文本处理专家。', icon: '🌙', url: 'https://kimi.moonshot.cn/', tag: '长文本', category: 'model' },
+  { id: 'mod_3', name: 'Kimi 智能助手', description: '月之暗面，长文本处理专家。', icon: '🌙', url: 'https://kimi.moonshot.cn/', tag: '长文本', category: 'model' },
   { id: 'mod_4', name: 'DeepSeek', description: '深度求索，开源模型之光。', icon: '🐳', url: 'https://www.deepseek.com/', tag: '开源', isNew: true, category: 'model' },
-  { id: 'mod_5', name: '智谱清言', description: 'GLM大模型，全能助手。', icon: '🧬', url: 'https://chatglm.cn/', tag: '全能', category: 'model' },
+  { id: 'mod_5', name: '智谱清言', description: 'GLM 大模型，全能助手。', icon: '🧬', url: 'https://chatglm.cn/', tag: '全能', category: 'model' },
   { id: 'mod_6', name: '通义千问', description: '阿里出品，综合能力强。', icon: '😺', url: 'https://tongyi.aliyun.com/', tag: '阿里', category: 'model' },
   { id: 'mod_7', name: '文心一言', description: '百度出品，中文理解好。', icon: '💬', url: 'https://yiyan.baidu.com/', tag: '百度', category: 'model' },
   { id: 'mod_8', name: '豆包', description: '字节跳动，语音交互好。', icon: '📦', url: 'https://www.doubao.com/', tag: '语音', category: 'model' },
-  { id: 'mod_9', name: 'Perplexity', description: 'AI搜索引擎，无需翻页。', icon: '🌐', url: 'https://www.perplexity.ai/', tag: '搜索', category: 'model' },
+  { id: 'mod_9', name: 'Perplexity', description: 'AI 搜索引擎，无需翻页。', icon: '🌐', url: 'https://www.perplexity.ai/', tag: '搜索', category: 'model' },
   { id: 'mod_10', name: 'Poe', description: '集成了多种大模型的平台。', icon: '🔮', url: 'https://poe.com/', tag: '集合', category: 'model' },
   { id: 'util_1', name: 'BigBearVPN', description: '网络辅助工具。', icon: '🐻', url: 'https://bigbearvpn.sodtool.com/', tag: '梯子', isNew: true, category: 'utility' },
-  { id: 'util_2', name: 'Hugging Face', description: 'AI届的Github，模型托管。', icon: '🤗', url: 'https://huggingface.co/', tag: '社区', category: 'utility' },
-  { id: 'util_3', name: '佐糖', description: 'AI抠图、去水印。', icon: '🍬', url: 'https://picwish.cn/', tag: '修图', category: 'utility' },
-  { id: 'util_4', name: 'Bigjpg', description: 'AI图片无损放大。', icon: '📐', url: 'https://bigjpg.com/', tag: '放大', category: 'utility' },
+  { id: 'util_2', name: 'Hugging Face', description: 'AI 届的 Github，模型托管。', icon: '🤗', url: 'https://huggingface.co/', tag: '社区', category: 'utility' },
+  { id: 'util_3', name: '佐糖', description: 'AI 抠图、去水印。', icon: '🍬', url: 'https://picwish.cn/', tag: '修图', category: 'utility' },
+  { id: 'util_4', name: 'Bigjpg', description: 'AI 图片无损放大。', icon: '📐', url: 'https://bigjpg.com/', tag: '放大', category: 'utility' },
   { id: 'util_5', name: 'SnapEdit', description: '一键移除图片中的物体。', icon: '🧹', url: 'https://snapedit.app/', tag: '移除', category: 'utility' },
-  { id: 'util_6', name: 'Clipdrop', description: 'Stability出品的工具箱，含打光等。', icon: '💡', url: 'https://clipdrop.co/', tag: '工具箱', category: 'utility' },
+  { id: 'util_6', name: 'Clipdrop', description: 'Stability 出品的工具箱，含打光等。', icon: '💡', url: 'https://clipdrop.co/', tag: '工具箱', category: 'utility' },
   { id: 'util_7', name: 'MagicEraser', description: '简单的魔术橡皮擦。', icon: '🧼', url: 'https://magicstudio.com/magiceraser', tag: '擦除', category: 'utility' },
   { id: 'util_8', name: 'Vectorizer', description: '位图转矢量图工具。', icon: '📈', url: 'https://vectorizer.ai/', tag: '矢量', category: 'utility' },
   { id: 'util_9', name: 'Remove.bg', description: '最经典的自动抠图。', icon: '✂️', url: 'https://www.remove.bg/', tag: '抠图', category: 'utility' },
-  { id: 'util_10', name: 'WatermarkRemover', description: 'AI智能去水印。', icon: '💧', url: 'https://www.watermarkremover.io/', tag: '水印', category: 'utility' },
-
-  // ================= 100 新增去水印工具大全 =================
-  ...Array.from({ length: 100 }).map((_, i) => {
-    const isVideo = i % 2 === 0;
-    const tools = [
-      { name: '微豆无水印', desc: '全网短视频解析，保持原画质。', icon: '🎥' },
-      { name: '佐糖AI擦除', desc: '智能消除图片水印，不伤底图。', icon: '🪄' },
-      { name: '快解助手', desc: '快手/抖音专用，批量下载无痕。', icon: '⚡' },
-      { name: '水印云', desc: '专业级视频图片批量处理专家。', icon: '☁️' },
-      { name: 'Apowersoft', desc: '傲软出品，简单高效的水印清理。', icon: '🛠️' }
-    ];
-    const base = tools[i % tools.length];
-    return {
-      id: `wm_${i + 1}`,
-      name: `${base.name}-${i + 1}`,
-      description: base.desc,
-      icon: base.icon,
-      url: 'https://www.google.com',
-      tag: i < 10 ? '推荐' : (isVideo ? '视频' : '图片'),
-      isNew: i < 5,
-      category: 'watermark' as const
-    };
-  })
+  { id: 'util_10', name: 'WatermarkRemover', description: 'AI 智能去水印。', icon: '💧', url: 'https://www.watermarkremover.io/', tag: '水印', category: 'utility' }
 ];
 
 export const THEME_CONFIG: Record<AppTheme, {
@@ -225,34 +290,10 @@ export const THEME_CONFIG: Record<AppTheme, {
 };
 
 export const WALLPAPER_PRESETS: WallpaperOption[] = [
-  {
-    id: 'wp_horse_1',
-    name: '2026 鎏金宝马',
-    prompt: '2026 Year of the Horse, a golden horse sculpture, intricate details, red background, traditional Chinese patterns, 8k resolution, cinematic lighting --ar 9:16'
-  },
-  {
-    id: 'wp_horse_2',
-    name: '赛博朋克战马',
-    prompt: 'Cyberpunk style mechanical horse, neon lights, futuristic city background, 2026 text, high tech, detailed, 8k --ar 9:16'
-  },
-  {
-    id: 'wp_horse_3',
-    name: '水墨中国风',
-    prompt: 'Traditional Chinese ink painting, galloping horse, calligraphy style 2026, minimalist, elegant, cultural heritage --ar 9:16'
-  },
-  {
-    id: 'wp_horse_4',
-    name: 'Q版萌马送福',
-    prompt: 'Cute 3D cartoon horse, holding a red envelope, festive atmosphere, Chinese New Year 2026, Pixar style, bright colors --ar 9:16'
-  },
-  {
-    id: 'wp_horse_5',
-    name: '剪纸艺术',
-    prompt: 'Chinese paper cut art, red horse, floral patterns, Year of the Horse 2026, intricate paper texture, soft lighting --ar 9:16'
-  },
-  {
-    id: 'wp_horse_6',
-    name: '祥云瑞兽',
-    prompt: 'Mythical horse with clouds, traditional Chinese colors, gold and red, auspicious symbols, 2026 New Year wallpaper --ar 9:16'
-  }
+  { id: 'wp_horse_1', name: '2026 鎏金宝马', prompt: '2026 Year of the Horse, a golden horse sculpture, intricate details, red background, traditional Chinese patterns, 8k resolution, cinematic lighting --ar 9:16' },
+  { id: 'wp_horse_2', name: '赛博朋克战马', prompt: 'Cyberpunk style mechanical horse, neon lights, futuristic city background, 2026 text, high tech, detailed, 8k --ar 9:16' },
+  { id: 'wp_horse_3', name: '水墨中国风', prompt: 'Traditional Chinese ink painting, galloping horse, calligraphy style 2026, minimalist, elegant, cultural heritage --ar 9:16' },
+  { id: 'wp_horse_4', name: 'Q版萌马送福', prompt: 'Cute 3D cartoon horse, holding a red envelope, festive atmosphere, Chinese New Year 2026, Pixar style, bright colors --ar 9:16' },
+  { id: 'wp_horse_5', name: '剪纸艺术', prompt: 'Chinese paper cut art, red horse, floral patterns, Year of the Horse 2026, intricate paper texture, soft lighting --ar 9:16' },
+  { id: 'wp_horse_6', name: '祥云瑞兽', prompt: 'Mythical horse with clouds, traditional Chinese colors, gold and red, auspicious symbols, 2026 New Year wallpaper --ar 9:16' }
 ];

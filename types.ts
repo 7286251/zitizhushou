@@ -1,3 +1,4 @@
+
 export interface StyleOption {
   id: string;
   name: string;
@@ -31,7 +32,7 @@ export enum AppTheme {
   NEO_BRUTALISM = 'neo_brutalism',
 }
 
-export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher';
+export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_sales';
 
 export interface PromptResult {
   text: string;
