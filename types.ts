@@ -22,7 +22,7 @@ export interface PaintingTool {
   tag?: string; // Status/Region tags
   isNew?: boolean; // New badge
   guide?: string; // Usage Tutorial
-  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility' | 'watermark' | 'dubbing'; 
+  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility' | 'watermark' | 'dubbing' | 'domestic' | 'international'; 
 }
 
 export enum AppTheme {

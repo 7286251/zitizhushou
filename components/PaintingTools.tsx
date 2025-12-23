@@ -15,6 +15,8 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
 
   const categories = [
     { id: 'all', label: '全部' },
+    { id: 'domestic', label: '🏮 国内AI' },
+    { id: 'international', label: '🌐 国际视野' },
     { id: 'video', label: '✨ AI视频' },
     { id: 'drawing', label: '🎨 AI绘画' },
     { id: 'dubbing', label: '🎙️ 配音秀' }, 
@@ -33,8 +35,11 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
     if (tag.includes('国外') || tag.includes('梯子')) {
         return 'bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse border border-white/40 font-black';
     }
-    if (tag.includes('国内') || tag.includes('国产')) {
+    if (tag.includes('国内') || tag.includes('国产') || tag.includes('国内AI')) {
       return 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_2px_8px_rgba(16,185,129,0.3)] border border-green-400/30 font-black';
+    }
+    if (tag.includes('积分') || tag.includes('任务')) {
+        return 'bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white shadow-[0_4px_12px_rgba(236,72,153,0.4)] border border-pink-300/40 font-black animate-bounce-slow';
     }
     if (tag.includes('纯净')) {
         return 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-[0_2px_8px_rgba(59,130,246,0.3)] border border-blue-400/30 font-black';
@@ -101,18 +106,24 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
           {filteredTools.map((tool, index) => {
             const spinDuration = (index % 5 + 6) + 's';
             const spinDirection = index % 2 === 0 ? 'normal' : 'reverse';
+            // 移除 'www.' 和 '.com' 字样
+            const displayUrl = new URL(tool.url).hostname.replace(/^www\./, '').replace(/\.com/g, '');
+            
             return (
-              <div key={tool.id} className="bg-white hover:bg-blue-50/50 p-4 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex flex-col group relative overflow-hidden h-40">
+              <div 
+                key={tool.id} 
+                onClick={() => handleOpenTool(tool.url)}
+                className="bg-white hover:bg-blue-50/50 p-4 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex flex-col group relative overflow-hidden h-44 cursor-pointer"
+              >
                 <div className="flex items-start mb-3">
                   <div 
-                    onClick={() => handleOpenTool(tool.url)}
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center text-3xl mr-3 shadow-inner shrink-0 cursor-pointer ${theme === AppTheme.NEW_YEAR_2026 ? 'bg-red-50' : 'bg-gray-50'}`} 
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center text-3xl mr-3 shadow-inner shrink-0 ${theme === AppTheme.NEW_YEAR_2026 ? 'bg-red-50' : 'bg-gray-50'}`} 
                     style={{ animation: `spin ${spinDuration} linear infinite ${spinDirection}` }}
                   >
                     <span className="group-hover:scale-110 transition-transform duration-300">{tool.icon}</span>
                   </div>
-                  <div className="flex-1 min-w-0" onClick={() => handleOpenTool(tool.url)}>
-                    <h3 className="font-black text-sm text-gray-800 truncate mb-0.5 group-hover:text-blue-600 transition-colors cursor-pointer">{tool.name}</h3>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-black text-sm text-gray-800 truncate mb-0.5 group-hover:text-blue-600 transition-colors">{tool.name}</h3>
                     <p className="text-[11px] text-gray-500 line-clamp-2 leading-tight h-8">{tool.description}</p>
                   </div>
                   <button 
@@ -124,17 +135,17 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
                   </button>
                 </div>
                 
-                <div className="mt-auto flex items-center justify-between">
-                  <div className="flex items-center gap-2 overflow-hidden">
+                <div className="mt-auto flex flex-col gap-2">
+                  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                      {tool.tag && <span className={`text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap ${getTagStyle(tool.tag)}`}>{tool.tag}</span>}
                      {tool.isNew && <span className="bg-rose-500 text-white px-2 py-0.5 rounded-full text-[9px] font-black animate-pulse shadow-sm">NEW</span>}
                   </div>
-                  <button 
-                    onClick={() => handleOpenTool(tool.url)}
-                    className="text-[10px] font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all"
-                  >
-                    GO官网 →
-                  </button>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] text-gray-400 font-bold truncate max-w-[150px]">{displayUrl}</span>
+                    <span className="text-[10px] font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all">
+                      进入应用 →
+                    </span>
+                  </div>
                 </div>
                 
                 {(tool.tag?.includes('国外')) && <div className="absolute -right-2 -top-2 text-5xl opacity-[0.03] rotate-12 pointer-events-none group-hover:opacity-[0.08] transition-opacity">🌐</div>}

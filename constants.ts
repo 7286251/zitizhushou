@@ -71,62 +71,53 @@ export const STYLE_OPTIONS: StyleOption[] = [
 
 const generate1000Tools = (): PaintingTool[] => {
   const topTools: PaintingTool[] = [
-    { id: 'rh_1', name: 'runninghub', description: '强大的国产AI创作平台，支持多种工作流。', icon: '🏃', url: 'https://www.runninghub.cn/', tag: '国内网站', category: 'drawing', isNew: true, guide: '1. 登录官网后选择“工作流”；2. 导入您的创作草图；3. 设置模型参数即可一键出图。' },
-    { id: 'oi_1', name: 'OiiOii', description: '极简风格的国内AI绘画工具，激发无限灵感。', icon: '🔘', url: 'https://www.oiioii.ai/', tag: '国内网站', category: 'drawing', isNew: true, guide: '适合零基础用户，直接输入中文描述，系统会自动匹配艺术风格，快速生成头像或插画。' },
-    { id: 'itp_1', name: '以图反推', description: '深度解析图像视觉语言，精准还原提示词。', icon: '🖼️', url: 'https://imagetoprompt.org/zh', tag: '国外网站-', category: 'reverse', guide: '上传您想要参考的图片，系统将输出详细的英文 Prompt，可直接用于 Midjourney。' },
-    { id: 'so_1', name: 'sora2', description: '下一代AI视频生成，电影级画质模拟。', icon: '🌌', url: 'https://sora.chatgpt.com/', tag: '国外网站-需要梯子工具', category: 'video', guide: '需要 OpenAI 账号权限，输入文本后可生成长达 60 秒的高清连贯视频。' },
-    { id: 'bd_1', name: '百度AI', description: '百度出品的创意生产力平台，支持妙笔生画。', icon: '🐾', url: 'https://miaobi.baidu.com/', tag: '国内网站', category: 'drawing', guide: '集成百度文心大模型，擅长中式国风、写实人像，支持中文提示词。' },
-    { id: 'ga_1', name: 'GaGaAI', description: '专注于 AI 角色形象与头像生成的创意工具。', icon: '🎭', url: 'https://gaga.art/zh/app/avatar', tag: '国外网站-需要梯子工具', category: 'drawing', guide: '通过上传自拍或描述，快速生成动漫、3D、写实等多种风格的个性化角色头像。' },
-    { id: 'hf_1', name: 'Hugging Face', description: '全球最大的 AI 社区，包含各种开源模型演示。', icon: '🤗', url: 'https://huggingface.co/spaces', tag: '国外网站-需要梯子工具', category: 'model', guide: '探索 Spaces 频道，可以免费测试最新发布的各种 AI 绘画、视频、配音开源模型。' },
-    { id: 'bb_1', name: 'BigBearVPN', description: '高速稳定的全球网络连接工具，助力 AI 创作。', icon: '🐻', url: 'https://bigbearvpn.sodtool.com/', tag: '纯净梯子工具', category: 'utility', guide: '一键加速，稳定访问 ChatGPT, Midjourney, Hugging Face 等海外 AI 站点。' },
-    { id: 'cy_1', name: '创一AI', description: '专业的国产剧本与内容创作 AI 助手。', icon: '📝', url: 'https://www.creatifyone.com/', tag: '国内剧本AI', category: 'prompt', guide: '提供从灵感提炼到剧本细化的全流程支持，内置多行业爆款文案模板。' },
-    { id: 'ty_1', name: '通义万相', description: '阿里出品，国内 Sora 级视频生成体验。', icon: '🐘', url: 'https://tongyi.aliyun.com/wan', tag: '国内sora 每天150个积分使用', category: 'video', guide: '支持文本/图像转视频，画面细腻，动态自然，每日签到可获 150 积分，足够多次生成。' },
+    // --- 用户指定核心工具 ---
+    { id: 'rh_1', name: 'runninghub', description: '强大的国产AI创作平台，支持多种工作流。', icon: '🏃', url: 'https://www.runninghub.cn/', tag: '国内网站', category: 'domestic', isNew: true, guide: '国产一站式 AI 创作平台，支持 ComfyUI/SD 等多种高级工作流。' },
+    { id: 'oi_1', name: 'OiiOii', description: '极简风格的国内AI绘画工具，激发无限灵感。', icon: '🔘', url: 'https://www.oiioii.ai/', tag: '国内网站', category: 'domestic', isNew: true, guide: '极简风格的国产绘画工具，适合新手快速生成创意插画。' },
+    { id: 'itp_1', name: '以图反推', description: '深度解析图像视觉语言，精准还原提示词。', icon: '🖼️', url: 'https://imagetoprompt.org/zh', tag: '国外网站-', category: 'reverse', guide: '上传图片，AI 将为您解析其视觉特征并输出专业级 Prompt。' },
+    { id: 'so_1', name: 'sora2', description: '下一代AI视频生成，电影级画质模拟。', icon: '🌌', url: 'https://sora.chatgpt.com/', tag: '国外网站-需要梯子工具', category: 'video', guide: 'OpenAI 旗下的视频生成模型，目前代表了 AI 视频生成的最高水平。' },
+    { id: 'bd_1', name: '百度AI', description: '百度出品的创意生产力平台，支持妙笔生画。', icon: '🐾', url: 'https://miaobi.baidu.com/', tag: '国内网站', category: 'domestic', guide: '百度文心系列绘画工具，深度优化中文语境理解。' },
+    { id: 'ga_1', name: 'GaGaAI', description: '专注于 AI 角色形象与头像生成的创意工具。', icon: '🎭', url: 'https://gaga.art/zh/app/avatar', tag: '国外网站-需要梯子工具', category: 'international', guide: '专注于高质量头像与游戏角色生成的 AI 工具。' },
+    { id: 'hf_1', name: 'Hugging Face', description: '全球最大的 AI 社区，包含各种开源模型演示。', icon: '🤗', url: 'https://huggingface.co/spaces', tag: '国外网站-需要梯子工具', category: 'international', guide: '全球最大的 AI 开源社区，可在 Spaces 免费测试数千种顶尖模型。' },
+    { id: 'bb_1', name: 'BigBearVPN', description: '高速稳定的全球网络连接工具，助力 AI 创作。', icon: '🐻', url: 'https://bigbearvpn.sodtool.com/', tag: '纯净梯子工具', category: 'utility', guide: '高速稳定的网络访问工具，助您无障碍使用海外 AI 资源。' },
+    { id: 'cy_1', name: '创一AI', description: '专业的国产剧本与内容创作 AI 助手。', icon: '📝', url: 'https://www.creatifyone.com/', tag: '国内剧本AI', category: 'domestic', guide: '专业的剧本创作助手，提供海量爆款行业文案模版。' },
+    { id: 'ty_1', name: '通义万相', description: '阿里出品，国内 Sora 级视频生成体验。', icon: '🐘', url: 'https://tongyi.aliyun.com/wan', tag: '国内sora 每天150个积分使用', category: 'domestic', guide: '阿里巴巴出品，支持文生图、图生视频，画质细腻自然。' },
+    { id: 'jm_1', name: '即梦', description: '字节跳动出品，集绘画与视频于一体的顶尖 AI。', icon: '🌈', url: 'https://jimeng.jianying.com/ai-tool/asset', tag: '国内AI 做任务获取积分和每天送积分', category: 'domestic', isNew: true, guide: '字节跳动旗下，集成顶尖生图与视频生成算法，支持海量 Lora 插件。' },
+    { id: 'db_1', name: '豆包', description: '字节跳动推出的全能型 AI 助手。', icon: '🧊', url: 'https://www.doubao.com/', tag: '国内网站', category: 'domestic', isNew: true, guide: '国内最火爆的 AI 助手，支持智能对话、绘画、翻译与文档分析。' },
+    { id: 'kl_1', name: '可灵', description: '快手出品，目前画质最强的国产 AI 视频大模型。', icon: '📹', url: 'https://klingai.com/', tag: '国内网站', category: 'domestic', isNew: true, guide: '快手推出的视频生成模型，其物理仿真效果与细腻度堪称国产之光。' },
+    { id: 'dy_1', name: '堆友', description: '阿里旗下设计师社区，拥有海量 Lora 模型。', icon: '🧱', url: 'https://duiyou.com/', tag: '国内网站', category: 'domestic', guide: '阿里旗下的设计师 AI 灵感社区，提供海量模型下载与在线生成。' },
+    { id: 'jm_int', name: 'Dreamina (即梦国际版)', description: '即梦官方国际版，支持全球语言与更广阔的模型库。', icon: '✂️', url: 'https://www.capcut.com/ai-tools', tag: '国外网站-需要梯子工具', category: 'international', guide: 'CapCut 体系下的 AI 创作工具，功能同步国内即梦，更适合出海创作。' },
+    { id: 'db_int', name: 'Cici (豆包国际版)', description: '豆包官方国际版，多语言适配更完善。', icon: '💬', url: 'https://www.cici.ai/', tag: '国外网站-需要梯子工具', category: 'international', guide: '字节跳动面向海外推出的 AI 助手，支持多国语言与特色语音包。' },
+    { id: 'kl_int', name: 'Kling AI Global', description: '可灵官方国际版，面向全球创作者开放。', icon: '🎬', url: 'https://klingai.org/', tag: '国外网站-需要梯子工具', category: 'international', guide: '快手可灵的全球版本，让全球用户体验极致的视频生成技术。' }
   ];
 
   const generatedTools: PaintingTool[] = [];
-  const categories: PaintingTool['category'][] = ['video', 'drawing', 'prompt', 'reverse', 'model', 'utility', 'watermark', 'dubbing'];
-  const emojis = ['🚀', '✨', '🌈', '🔥', '⚡', '💎', '🎨', '🎬', '🎙️', '🧬', '🔮', '🧩', '🧪', '🔭', '🛰️', '🕹️', '📟', '📀', '💡', '🔔', '🔋', '📡', '🛡️', '⚔️', '🗝️', '🧪', '🌡️', '🧠', '👀', '🦁', '🦉', '🦋'];
+  const categories: PaintingTool['category'][] = ['domestic', 'international', 'video', 'drawing', 'prompt', 'reverse', 'model', 'utility', 'watermark', 'dubbing'];
+  const emojis = ['🚀', '✨', '🌈', '🔥', '⚡', '💎', '🎨', '🎬', '🎙️', '🧬', '🔮', '🧩', '🧪', '🔭', '🛰️', '🕹️', '📟', '📀', '💡', '🔔', '🔋', '📡', '🛡️', '⚔️', '🗝️', '🧠', '🦁', '🦉', '🦋'];
   
-  const adjs = ['Creative', 'Smart', 'Neural', 'Pixel', 'Vector', 'Sonic', 'Semantic', 'Visual', 'Magic', 'Omni', 'Super', 'Rapid', 'Infinite', 'Elite', 'Universal', 'Nexus', 'Prime', 'Apex', 'Core', 'Vivid', 'Fluent', 'Deep', 'Hyper', 'Ultra', 'Meta', 'Neo', 'Nova', 'Aura', 'Zenith', 'Summit', 'Peak', 'Base', 'Origin', 'Source', 'Master', 'Expert', 'Swift', 'Bright', 'Bold', 'Cool'];
-  const domains = ['Prompt', 'Vision', 'Motion', 'Voice', 'Sound', 'Art', 'Design', 'Code', 'Web', 'Social', 'Marketing', 'Legal', 'Medical', 'Finance', 'Education', 'Gaming', 'Writing', 'Style', 'Filter', 'Effect', 'Layer', 'Mask', 'Clean', 'Enhance', 'Upscale', 'Compress', 'Convert', 'Bridge', 'Sync', 'Flow', 'Grid', 'Frame', 'Shot', 'Scene', 'Lens', 'Face', 'Body', 'Sky', 'Light'];
-  const types = ['AI', 'GPT', 'Engine', 'Bot', 'Studio', 'Lab', 'Hub', 'Pro', 'Lite', 'Plus', 'Master', 'Expert', 'Tool', 'App', 'Suite', 'Platform', 'Network', 'Service', 'System', 'Logic', 'Mind', 'Brain', 'Eye', 'Ear', 'Speak', 'Draw', 'Paint', 'Clip', 'Snap', 'Edit', 'Craft', 'Maker', 'Link', 'Forge', 'Vault', 'Pulse', 'Sense'];
-
   const usedNames = new Set<string>();
 
+  // 确保每个分类都有 100+ 条内容
   categories.forEach(cat => {
     let catCount = 0;
-    while (catCount < 125) {
-      const adj = adjs[Math.floor(Math.random() * adjs.length)];
-      const domain = domains[Math.floor(Math.random() * domains.length)];
-      const type = types[Math.floor(Math.random() * types.length)];
-      const name = `${adj} ${domain} ${type}`;
-
+    const catPrefix = cat === 'domestic' ? '国产' : (cat === 'international' ? '国际' : '超级');
+    
+    while (catCount < 110) {
+      const name = `${catPrefix} AI ${cat.toUpperCase()} ${catCount + 1}`;
       if (!usedNames.has(name)) {
         usedNames.add(name);
-        let desc = '';
         const icon = emojis[Math.floor(Math.random() * emojis.length)];
+        const isDomestic = cat === 'domestic' || Math.random() > 0.6;
         
-        switch(cat) {
-          case 'video': desc = `专注于 ${domain} 的 AI 视频生成与动态捕捉平台。`; break;
-          case 'drawing': desc = `融合 ${adj} 算法的 AI 绘画创作与艺术风格化工具。`; break;
-          case 'dubbing': desc = `提供 ${adj} ${domain} 级 AI 配音，支持多种真实音色。`; break;
-          case 'watermark': desc = `极速移除 ${domain} 中的各类复杂水印与视觉杂物。`; break;
-          case 'model': desc = `基于 ${adj} 架构的深度 ${domain} 领域大模型助手。`; break;
-          case 'prompt': desc = `为 ${domain} 创作提供海量 ${adj} 灵感与提示词。`; break;
-          case 'reverse': desc = `一键反推 ${domain} 图像中的原始提示词与风格。`; break;
-          default: desc = `多功能的 ${adj} ${domain} 生产力辅助 AI 工具箱。`;
-        }
-
         generatedTools.push({
-          id: `gen_${cat}_${catCount}_${Math.random().toString(36).substr(2, 4)}`,
+          id: `gen_${cat}_${catCount}`,
           name: name,
-          description: desc,
+          description: `这是专注于 ${cat} 领域的第 ${catCount + 1} 款专业 AI 创作工具。`,
           icon: icon,
-          url: `https://www.google.com/search?q=${encodeURIComponent(name)}+AI+Tool`,
-          tag: Math.random() > 0.8 ? 'NEW' : (Math.random() > 0.5 ? 'FREE' : 'PRO'),
+          url: `https://ai-search-directory.com/tool/${cat}/${catCount}`,
+          tag: isDomestic ? '国内网站' : '国外网站-需要梯子工具',
           category: cat,
-          isNew: Math.random() > 0.9,
-          guide: `这是一个通用的 AI 工具指南：1. 访问链接；2. 寻找“Get Started”按钮；3. 参照官方帮助文档进行 ${domain} 相关操作。`
+          guide: `访问该工具官网，开启您的 ${cat} 创作之旅。`
         });
         catCount++;
       }
