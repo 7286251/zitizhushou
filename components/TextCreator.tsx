@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { STYLE_OPTIONS, THEME_CONFIG } from '../constants';
 import { AppTheme } from '../types';
@@ -14,29 +15,20 @@ const TextCreator: React.FC<Props> = ({ theme }) => {
   const [text3, setText3] = useState('');
   const [selectedStyle, setSelectedStyle] = useState(STYLE_OPTIONS[0].id);
   const [customStyle, setCustomStyle] = useState('');
-  const [activeCategory, setActiveCategory] = useState('爆款封面'); // Default to new category
+  const [activeCategory, setActiveCategory] = useState('爆款封面');
   const [result, setResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
   const categories = useMemo(() => {
-    // Priority order updated for new categories
     const priorityOrder = ['爆款封面', '马年限定', '热门', '游戏电竞', '商业封面', '趣味社交', '经典艺术'];
-    
-    // Get all unique categories from data
     const uniqueCats = Array.from(new Set(STYLE_OPTIONS.map(s => s.category)));
-    
-    // Sort based on priority order
     return uniqueCats.sort((a, b) => {
       const idxA = priorityOrder.indexOf(a);
       const idxB = priorityOrder.indexOf(b);
-      // If both are in priority list, sort by index
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      // If only A is in list, A comes first
       if (idxA !== -1) return -1;
-      // If only B is in list, B comes first
       if (idxB !== -1) return 1;
-      // Otherwise alphabetical or default sort
       return a.localeCompare(b);
     });
   }, []);
@@ -68,151 +60,147 @@ const TextCreator: React.FC<Props> = ({ theme }) => {
 
   const getCategoryButtonClass = (cat: string) => {
     const isActive = activeCategory === cat;
-    
     if (theme === AppTheme.NEW_YEAR_2026) {
       return isActive 
-        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-md border border-yellow-300' 
+        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-md border border-yellow-300 scale-105' 
         : 'bg-red-50 text-red-900 hover:bg-red-100 border border-transparent';
     }
-    if (theme === AppTheme.RETRO_DESKTOP) {
-      return isActive 
-        ? 'bg-blue-600 text-white border-2 border-blue-800 shadow-inner' 
-        : 'bg-white text-blue-600 border-2 border-gray-300 hover:bg-blue-50';
-    }
-    if (theme === AppTheme.PINK_PLUSH) {
-      return isActive 
-        ? 'bg-pink-500 text-white shadow-lg transform scale-105' 
-        : 'bg-white text-pink-400 hover:bg-pink-50 shadow-sm';
-    }
-    return '';
+    return isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600';
   };
 
   return (
-    <div className={`p-6 ${config.cardClass} relative transition-all duration-300`}>
-      <h2 className={`text-2xl font-bold mb-4 ${config.textClass} flex items-center`}>
-        <span className="mr-2">✨</span> 艺术字创作模式
-      </h2>
+    <div className={`p-6 ${config.cardClass} relative transition-all duration-300 h-full overflow-y-auto custom-scrollbar flex flex-col`}>
+      {/* 酷炫动态教程框 */}
+      <div className="mb-6 relative overflow-hidden bg-gradient-to-r from-red-900/10 to-orange-900/10 p-4 rounded-2xl border border-white/20 backdrop-blur-sm shadow-inner">
+         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[marquee_3s_linear_infinite]"></div>
+         <h3 className="text-sm font-black text-red-500 mb-2 flex items-center gap-2">
+           <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+           造字工坊说明 · TIPS
+         </h3>
+         <div className="text-xs text-gray-500 leading-relaxed space-y-1 font-bold">
+           <p className="hover:text-red-400 transition-colors">1. 智能体专注输出高质量绘画提示词，不支持直接生成图片。</p>
+           <p className="hover:text-red-400 transition-colors">2. 选择内置爆款风格或在“自定义”中输入您想要的画面意境。</p>
+           <p className="hover:text-red-400 transition-colors">3. 生成后点击复制，前往 MJ/SD/豆包 等绘图工具粘贴即可。</p>
+         </div>
+      </div>
 
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className={`block text-sm font-bold mb-1 ${config.textClass}`}>输入文字</label>
-            <input 
-              type="text" 
-              value={text1}
-              onChange={(e) => setText1(e.target.value)}
-              placeholder="例如：马年大吉"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-opacity-50 outline-none transition-all"
-            />
+      <div className="flex justify-between items-center mb-6">
+        <h2 className={`text-2xl font-bold ${config.textClass} flex items-center`}>
+          <span className="mr-2">✍️</span> 艺术字提示词智能体
+          <span className="ml-3 text-[10px] bg-red-500 text-white px-2 py-0.5 rounded font-black animate-pulse">2026 限定版</span>
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1">
+        <div className="space-y-6">
+          <div className="bg-white/50 p-5 rounded-2xl border border-red-100 shadow-sm space-y-4">
+             <div className="grid grid-cols-1 gap-4">
+               <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">核心主文字</label>
+                  <input 
+                    type="text" 
+                    value={text1} 
+                    onChange={(e) => setText1(e.target.value)} 
+                    placeholder="输入您要生成的文字，如：马到成功" 
+                    className="w-full p-3 bg-white border border-red-50 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-400 outline-none shadow-sm transition-all" 
+                  />
+               </div>
+               <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">装饰小字 (第一行)</label>
+                    <input type="text" value={text2} onChange={(e) => setText2(e.target.value)} placeholder="如：NEW YEAR" className="w-full p-3 bg-white border border-red-50 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-400 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">装饰小字 (第二行)</label>
+                    <input type="text" value={text3} onChange={(e) => setText3(e.target.value)} placeholder="如：2026" className="w-full p-3 bg-white border border-red-50 rounded-xl text-sm font-bold focus:ring-2 focus:ring-red-400 outline-none" />
+                  </div>
+               </div>
+             </div>
+
+             <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase mb-2 block">自定义意境/风格</label>
+                <textarea 
+                  value={customStyle} 
+                  onChange={(e) => setCustomStyle(e.target.value)} 
+                  placeholder="在此输入您的个性化风格描述，如：冰晶质感、霓虹灯效、3D充气..."
+                  className="w-full p-3 bg-white border border-red-50 rounded-xl text-xs font-bold h-20 focus:ring-2 focus:ring-red-400 outline-none shadow-sm resize-none"
+                />
+             </div>
           </div>
-          <div>
-            <label className={`block text-sm font-bold mb-1 ${config.textClass}`}>第二行小字</label>
-            <input 
-              type="text" 
-              value={text2}
-              onChange={(e) => setText2(e.target.value)}
-              placeholder="例如：HAPPY NEW YEAR"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-opacity-50 outline-none transition-all"
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className={`block text-sm font-bold mb-1 ${config.textClass}`}>签名字</label>
-            <input 
-              type="text" 
-              value={text3}
-              onChange={(e) => setText3(e.target.value)}
-              placeholder="例如：小渝児设计 / 2026"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-opacity-50 outline-none transition-all"
-            />
-          </div>
+
+          <button 
+            onClick={handleGenerate} 
+            disabled={isLoading}
+            className={`w-full py-4 rounded-2xl font-black text-lg shadow-xl transform transition-all active:scale-95 ${config.buttonClass} disabled:opacity-50 flex items-center justify-center gap-2`}
+          >
+            {isLoading ? '🔮 AI 正在构思意境...' : '🚀 立即生成专业提示词'}
+          </button>
         </div>
 
-        <div>
-          <div className="flex justify-between items-center mb-2">
-             <label className={`block text-sm font-bold ${config.textClass}`}>选择风格</label>
-             <span className="text-xs opacity-60">内置600+精品风格</span>
-          </div>
-          
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 mb-3">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${getCategoryButtonClass(cat)}`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-56 overflow-y-auto pr-2 custom-scrollbar">
-            {filteredStyles.map((style) => (
-              <button
-                key={style.id}
-                onClick={() => setSelectedStyle(style.id)}
-                className={`p-2 text-xs rounded-md border text-left transition-all ${
-                  selectedStyle === style.id 
-                    ? 'ring-2 ring-offset-1 ring-blue-500 bg-blue-50 border-blue-500 text-blue-700' 
-                    : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-200'
-                }`}
-              >
-                <div className="font-bold flex items-center justify-between mb-1">
-                  <span className="truncate">{style.name}</span>
-                  {selectedStyle === style.id && <span className="text-blue-500 font-bold">✓</span>}
-                </div>
-                <div className="text-[10px] opacity-70 truncate" title={style.description}>
-                  {style.description}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className={`block text-sm font-bold mb-1 ${config.textClass}`}>自定义风格 (可选)</label>
-          <textarea 
-            value={customStyle}
-            onChange={(e) => setCustomStyle(e.target.value)}
-            placeholder="例如：长沙臭豆腐主题，黑色臭豆腐质感，加上绿色香菜点缀..."
-            className="w-full p-3 border rounded-lg h-20 focus:ring-2 focus:ring-opacity-50 outline-none transition-all"
-          />
-        </div>
-
-        <button 
-          onClick={handleGenerate}
-          disabled={isLoading}
-          className={`w-full py-3 rounded-lg text-lg shadow-md transition-transform active:scale-95 ${config.buttonClass} disabled:opacity-50`}
-        >
-          {isLoading ? (
-            <span className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              大师思考中...
-            </span>
-          ) : '开始生成提示词'}
-        </button>
-
-        {result && (
-          <div className="mt-6 relative animate-pop">
-            <div className="bg-gray-800 text-gray-100 p-4 rounded-lg font-mono text-sm break-all leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto">
-              {result}
-            </div>
-            <button 
-              onClick={handleCopy}
-              className="absolute top-2 right-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded text-xs backdrop-blur-sm transition-colors"
-            >
-              复制
-            </button>
-            {copySuccess && (
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-6 py-3 rounded-full shadow-2xl animate-pop z-10 font-bold flex items-center">
-                 ✨ 复制成功！ ✨
+        <div className="flex flex-col space-y-4">
+           <div>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {categories.map(cat => (
+                  <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-3 py-1.5 rounded-full text-[10px] font-black transition-all duration-200 ${getCategoryButtonClass(cat)}`}>
+                    {cat}
+                  </button>
+                ))}
               </div>
-            )}
-          </div>
-        )}
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar bg-white/30 p-2 rounded-xl border border-gray-100 shadow-inner">
+                {filteredStyles.map((style) => (
+                  <button 
+                    key={style.id} 
+                    onClick={() => setSelectedStyle(style.id)} 
+                    className={`p-2 text-[10px] rounded-lg border text-left transition-all ${selectedStyle === style.id ? 'bg-red-600 text-white border-red-600 shadow-md transform scale-105' : 'bg-white hover:bg-red-50 text-gray-700 border-gray-100'}`}
+                  >
+                    <div className="font-black truncate">{style.name}</div>
+                    <div className="text-[8px] opacity-70 truncate mt-1">{style.description}</div>
+                  </button>
+                ))}
+              </div>
+           </div>
+
+           <div className="flex-1 bg-gray-900 rounded-3xl p-6 relative overflow-hidden shadow-2xl border border-white/10 min-h-[250px] flex flex-col">
+              <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
+                 <span className="text-[10px] font-black text-red-500 tracking-widest uppercase flex items-center gap-2">
+                   <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
+                   AI 绘画提示词 (PROMPT RESULT)
+                 </span>
+                 {result && (
+                   <button 
+                    onClick={handleCopy}
+                    className="bg-white/10 hover:bg-white/20 text-white text-[10px] px-3 py-1 rounded-full backdrop-blur-md transition-all font-black border border-white/10"
+                   >
+                     {copySuccess ? '✨ 已复制' : '复制词条'}
+                   </button>
+                 )}
+              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                 {result ? (
+                   <div className="text-gray-300 font-mono text-sm leading-relaxed whitespace-pre-wrap italic animate-pop">
+                      {result}
+                   </div>
+                 ) : (
+                   <div className="h-full flex flex-col items-center justify-center text-gray-700 space-y-4">
+                      <div className="text-6xl opacity-20">✍️</div>
+                      <p className="font-black text-xs tracking-widest uppercase opacity-40">等待您的灵感输入...</p>
+                   </div>
+                 )}
+              </div>
+              {copySuccess && (
+                <div className="absolute inset-0 bg-red-600/90 flex flex-col items-center justify-center animate-pop z-10">
+                   <div className="text-5xl mb-2 animate-bounce">🧧</div>
+                   <div className="text-white text-xl font-black italic tracking-widest">复制成功！</div>
+                   <div className="text-white/70 text-[10px] mt-1 font-bold">提示词已就绪，立即前往 AI 画图</div>
+                </div>
+              )}
+           </div>
+        </div>
+      </div>
+      
+      <div className="mt-8 pt-4 border-t border-gray-100 text-center text-[9px] text-gray-400 font-bold uppercase tracking-[0.5em]">
+        Prompt Intelligent Agent v3.5 · Designed by 小渝児
       </div>
     </div>
   );

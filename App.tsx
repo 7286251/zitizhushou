@@ -11,13 +11,15 @@ import StoryboardCreator from './components/StoryboardCreator';
 import GridSplitter from './components/GridSplitter';
 import Publisher from './components/Publisher';
 import ClothingSales from './components/ClothingSales'; 
+import ExtractClothes from './components/ExtractClothes';
+import ClothingKeywords from './components/ClothingKeywords';
 import Typewriter from './components/Typewriter';
 
 const themes = Object.values(AppTheme);
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<AppTheme>(AppTheme.NEW_YEAR_2026);
-  const [mode, setMode] = useState<AppMode>('clothing_sales');
+  const [mode, setMode] = useState<AppMode>('clothing_keywords');
 
   const config = THEME_CONFIG[theme];
 
@@ -103,6 +105,18 @@ const App: React.FC = () => {
 
       <nav className="flex justify-center gap-2 md:gap-4 px-4 mb-2 z-10 flex-wrap overflow-x-auto no-scrollbar pt-4">
         <button
+          onClick={() => setMode('clothing_keywords')}
+          className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base whitespace-nowrap ${mode === 'clothing_keywords' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
+        >
+          🧥 服装关键词
+        </button>
+        <button
+          onClick={() => setMode('extract_clothes')}
+          className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base whitespace-nowrap ${mode === 'extract_clothes' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
+        >
+          ✂️ 提取衣服
+        </button>
+        <button
           onClick={() => setMode('clothing_sales')}
           className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base whitespace-nowrap ${mode === 'clothing_sales' ? `${config.cardClass} border-b-0 translate-y-2 pb-4` : 'bg-white/50 hover:bg-white/80'}`}
         >
@@ -148,6 +162,8 @@ const App: React.FC = () => {
 
       <main className="flex-1 overflow-hidden flex justify-center px-4 pb-20">
         <div className="w-full h-full relative max-w-6xl">
+           {mode === 'clothing_keywords' && <ClothingKeywords theme={theme} />}
+           {mode === 'extract_clothes' && <ExtractClothes theme={theme} />}
            {mode === 'clothing_sales' && <ClothingSales theme={theme} />}
            {mode === 'publisher' && <Publisher theme={theme} />}
            {mode === 'creation' && <TextCreator theme={theme} />}

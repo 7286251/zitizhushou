@@ -205,6 +205,13 @@ const ClothingSales: React.FC<Props> = ({ theme }) => {
                   </button>
                 ))}
               </div>
+              <input 
+                type="text" 
+                value={sceneType}
+                onChange={(e) => setSceneType(e.target.value)}
+                placeholder="或在此手动输入自定义场景..."
+                className="w-full mt-2 p-3 bg-white border border-blue-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
+              />
             </div>
 
             <div>

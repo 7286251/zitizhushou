@@ -3,7 +3,75 @@ import { GoogleGenAI, Content, Part } from "@google/genai";
 
 const getAiClient = () => {
   const apiKey = process.env.API_KEY;
-  return new GoogleGenAI({ apiKey: apiKey! });
+  if (!apiKey) {
+    throw new Error("API_KEY is not configured");
+  }
+  return new GoogleGenAI({ apiKey });
+};
+
+export const extractClothingImage = async (
+  imageFile: File,
+  type: string,
+  view: string,
+  is3d: boolean,
+  count: number
+): Promise<string[]> => {
+  const ai = getAiClient();
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(imageFile);
+  });
+
+  const modelName = 'gemini-2.5-flash-image';
+  const prompt = `Task: Extract the specific clothing item [${type}] from the provided image.
+Requirements:
+1. Isolated item: Remove the person and background completely. Show only the clothing.
+2. Background: Pure white background.
+3. View: [${view}] view.
+4. Presentation: ${is3d ? "3D Ghost mannequin effect (3D form without the model)." : "Flat lay effect (spread flat on a surface)."}
+5. Fidelity: Match the colors, patterns, textures, and details of the original clothing exactly.
+6. Quality: High-resolution product photography style with professional lighting.
+Generate ${count} image(s).`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: {
+        parts: [
+          { inlineData: { mimeType: imageFile.type, data: base64Data } },
+          { text: prompt }
+        ]
+      },
+      config: {
+        imageConfig: {
+          aspectRatio: "3:4"
+        }
+      }
+    });
+
+    const imageUrls: string[] = [];
+    if (response.candidates && response.candidates[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          imageUrls.push(`data:image/png;base64,${part.inlineData.data}`);
+        }
+      }
+    }
+
+    if (imageUrls.length === 0) {
+      console.warn("No image data returned in response");
+    }
+    
+    return imageUrls;
+  } catch (error) {
+    console.error("Clothing extraction API error:", error);
+    throw error;
+  }
 };
 
 export const generateClothingPrompts = async (
@@ -59,7 +127,6 @@ export const generateClothingPrompts = async (
   }
 };
 
-// ... 其他原有函数保持不变 ...
 export const analyzeImageForPublishing = async (imageFile: File): Promise<{ productName: string, scene: string }> => {
   const model = "gemini-3-flash-preview";
   const ai = getAiClient();

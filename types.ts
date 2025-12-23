@@ -21,7 +21,8 @@ export interface PaintingTool {
   scheme?: string; // App Protocol Scheme
   tag?: string; // Status/Region tags
   isNew?: boolean; // New badge
-  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility' | 'watermark'; // Added watermark
+  guide?: string; // Usage Tutorial
+  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility' | 'watermark' | 'dubbing'; 
 }
 
 export enum AppTheme {
@@ -32,7 +33,7 @@ export enum AppTheme {
   NEO_BRUTALISM = 'neo_brutalism',
 }
 
-export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_sales';
+export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_sales' | 'extract_clothes' | 'clothing_keywords';
 
 export interface PromptResult {
   text: string;
