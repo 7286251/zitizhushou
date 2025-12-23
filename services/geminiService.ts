@@ -9,6 +9,95 @@ const getAiClient = () => {
   return new GoogleGenAI({ apiKey });
 };
 
+export const analyzeCoverText = async (imageFile: File): Promise<string> => {
+  const ai = getAiClient();
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(imageFile);
+  });
+
+  const model = "gemini-3-flash-preview";
+  const prompt = "请识别并提取这张图片中最显眼的主标题或核心文字内容。只返回文字本身，不要有任何其他解释。如果包含多个文本块，请提取最具代表性的那个。";
+
+  try {
+    const response = await ai.models.generateContent({
+      model,
+      contents: {
+        parts: [
+          { inlineData: { mimeType: imageFile.type, data: base64Data } },
+          { text: prompt }
+        ]
+      }
+    });
+
+    return response.text?.trim() || "";
+  } catch (error) {
+    console.error("Text analysis failed:", error);
+    return "";
+  }
+};
+
+export const replicateCoverImage = async (
+  imageFile: File,
+  originalText: string,
+  newText: string
+): Promise<string> => {
+  const ai = getAiClient();
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(imageFile);
+  });
+
+  const modelName = 'gemini-2.5-flash-image';
+  const prompt = `Task: Modify the text on this viral cover.
+1. Find the text "${originalText}" in the image.
+2. Replace it with the new text: "${newText}".
+3. IMPORTANT: Maintain the exact same font style, color, size, orientation, and artistic effects (like glow, shadows, or textures) as the original text.
+4. Keep the background and all other elements of the image completely unchanged.
+5. Output the high-quality modified image.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: {
+        parts: [
+          { inlineData: { mimeType: imageFile.type, data: base64Data } },
+          { text: prompt }
+        ]
+      }
+    });
+
+    let imageUrl = "";
+    if (response.candidates && response.candidates[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          imageUrl = `data:image/png;base64,${part.inlineData.data}`;
+          break;
+        }
+      }
+    }
+
+    if (!imageUrl) {
+      throw new Error("No image data returned from model");
+    }
+    
+    return imageUrl;
+  } catch (error) {
+    console.error("Cover replication error:", error);
+    throw error;
+  }
+};
+
 export const extractClothingImage = async (
   imageFile: File,
   type: string,
@@ -156,7 +245,7 @@ export const analyzeImageForStoryboard = async (imageFile: File): Promise<string
     reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
     reader.readAsDataURL(imageFile);
   });
-  const prompt = `分析这张图片，为分镜设计提供详细的主体和场景描述。请用中文回答。`;
+  const prompt = `分析这张图片，为分镜设计提供详细的主体 and 场景描述。请用中文回答。`;
   try {
     const response = await ai.models.generateContent({
       model,

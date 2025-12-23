@@ -31,9 +31,11 @@ export enum AppTheme {
   PINK_PLUSH = 'pink_plush',
   DOPAMINE = 'dopamine',
   NEO_BRUTALISM = 'neo_brutalism',
+  DARK_GRADIENT = 'dark_gradient',
+  CARTOON_HORSE_RED = 'cartoon_horse_red',
 }
 
-export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_sales' | 'extract_clothes' | 'clothing_keywords';
+export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_sales' | 'extract_clothes' | 'clothing_keywords' | 'cover_replica';
 
 export interface PromptResult {
   text: string;

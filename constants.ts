@@ -17,7 +17,7 @@ export const CLOTHING_SCENES = [
   { id: 'cafe', name: '法式咖啡馆', category: '室外' },
   { id: 'bedroom', name: '奶油风卧室', category: '室内' },
   { id: 'studio', name: '极简摄影棚', category: '室内' },
-  { id: 'office', name: '高端写字楼', category: '室内' },
+  { id: 'office', name: '高端写写楼', category: '室内' },
   { id: 'garden', name: '莫奈花园', category: '室外' },
   { id: 'library', name: '复古图书馆', category: '室内' },
   { id: 'beach', name: '假日海滩', category: '室外' },
@@ -74,7 +74,7 @@ const generate1000Tools = (): PaintingTool[] => {
     // --- 用户指定核心工具 ---
     { id: 'rh_1', name: 'runninghub', description: '强大的国产AI创作平台，支持多种工作流。', icon: '🏃', url: 'https://www.runninghub.cn/', tag: '国内网站', category: 'domestic', isNew: true, guide: '国产一站式 AI 创作平台，支持 ComfyUI/SD 等多种高级工作流。' },
     { id: 'oi_1', name: 'OiiOii', description: '极简风格的国内AI绘画工具，激发无限灵感。', icon: '🔘', url: 'https://www.oiioii.ai/', tag: '国内网站', category: 'domestic', isNew: true, guide: '极简风格的国产绘画工具，适合新手快速生成创意插画。' },
-    { id: 'itp_1', name: '以图反推', description: '深度解析图像视觉语言，精准还原提示词。', icon: '🖼️', url: 'https://imagetoprompt.org/zh', tag: '国外网站-', category: 'reverse', guide: '上传图片，AI 将为您解析其视觉特征并输出专业级 Prompt。' },
+    { id: 'itp_1', name: '以图反推', description: '深度解析图像视觉语言，精准还原提示词。', icon: '🖼️', url: 'https://imagetoprompt.org/zh', tag: '国外网站-', category: 'reverse', guide: '上传图片，AI 将为您解析其视觉特征并输出专业级 Prompt分析。' },
     { id: 'so_1', name: 'sora2', description: '下一代AI视频生成，电影级画质模拟。', icon: '🌌', url: 'https://sora.chatgpt.com/', tag: '国外网站-需要梯子工具', category: 'video', guide: 'OpenAI 旗下的视频生成模型，目前代表了 AI 视频生成的最高水平。' },
     { id: 'bd_1', name: '百度AI', description: '百度出品的创意生产力平台，支持妙笔生画。', icon: '🐾', url: 'https://miaobi.baidu.com/', tag: '国内网站', category: 'domestic', guide: '百度文心系列绘画工具，深度优化中文语境理解。' },
     { id: 'ga_1', name: 'GaGaAI', description: '专注于 AI 角色形象与头像生成的创意工具。', icon: '🎭', url: 'https://gaga.art/zh/app/avatar', tag: '国外网站-需要梯子工具', category: 'international', guide: '专注于高质量头像与游戏角色生成的 AI 工具。' },
@@ -176,6 +176,22 @@ export const THEME_CONFIG: Record<AppTheme, {
     buttonClass: 'bg-white text-black border-4 border-black hover:bg-black hover:text-white transition-colors',
     accentColor: 'bg-black text-white px-2',
     titleEffect: '',
+  },
+  [AppTheme.DARK_GRADIENT]: {
+    bgClass: 'bg-[#0f172a]',
+    cardClass: 'bg-gradient-to-br from-[#1e293b] to-[#0f172a] border border-blue-500/30 shadow-[0_0_30px_rgba(30,58,138,0.5)] rounded-2xl backdrop-blur-sm',
+    textClass: 'text-slate-100',
+    buttonClass: 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] hover:from-cyan-400 hover:to-blue-500 border-none transition-all duration-300',
+    accentColor: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400',
+    titleEffect: 'drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]',
+  },
+  [AppTheme.CARTOON_HORSE_RED]: {
+    bgClass: 'bg-[#e60012]',
+    cardClass: 'bg-white border-[6px] border-black shadow-[15px_15px_0px_rgba(0,0,0,1)] rounded-[3rem]',
+    textClass: 'text-black font-black italic uppercase',
+    buttonClass: 'bg-black text-white border-4 border-white font-black hover:bg-white hover:text-black hover:border-black transition-all rounded-full',
+    accentColor: 'text-white drop-shadow-[5px_5px_0px_rgba(0,0,0,1)]',
+    titleEffect: 'skew-x-[-12deg]',
   },
 };
 
