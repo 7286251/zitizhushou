@@ -69,9 +69,7 @@ export const STYLE_OPTIONS: StyleOption[] = [
   { id: 'cls_1', name: '鎏金大字', category: '经典艺术', description: '黑金配色，毛笔飞白，洒金粉，霸气' }
 ];
 
-const generate1000Tools = (): PaintingTool[] => {
-  const topTools: PaintingTool[] = [
-    // --- 用户指定核心工具 ---
+export const PAINTING_TOOLS: PaintingTool[] = [
     { id: 'rh_1', name: 'runninghub', description: '强大的国产AI创作平台，支持多种工作流。', icon: '🏃', url: 'https://www.runninghub.cn/', tag: '国内网站', category: 'domestic', isNew: true, guide: '国产一站式 AI 创作平台，支持 ComfyUI/SD 等多种高级工作流。' },
     { id: 'oi_1', name: 'OiiOii', description: '极简风格的国内AI绘画工具，激发无限灵感。', icon: '🔘', url: 'https://www.oiioii.ai/', tag: '国内网站', category: 'domestic', isNew: true, guide: '极简风格的国产绘画工具，适合新手快速生成创意插画。' },
     { id: 'itp_1', name: '以图反推', description: '深度解析图像视觉语言，精准还原提示词。', icon: '🖼️', url: 'https://imagetoprompt.org/zh', tag: '国外网站-', category: 'reverse', guide: '上传图片，AI 将为您解析其视觉特征并输出专业级 Prompt分析。' },
@@ -89,45 +87,7 @@ const generate1000Tools = (): PaintingTool[] => {
     { id: 'jm_int', name: 'Dreamina (即梦国际版)', description: '即梦官方国际版，支持全球语言与更广阔的模型库。', icon: '✂️', url: 'https://www.capcut.com/ai-tools', tag: '国外网站-需要梯子工具', category: 'international', guide: 'CapCut 体系下的 AI 创作工具，功能同步国内即梦，更适合出海创作。' },
     { id: 'db_int', name: 'Cici (豆包国际版)', description: '豆包官方国际版，多语言适配更完善。', icon: '💬', url: 'https://www.cici.ai/', tag: '国外网站-需要梯子工具', category: 'international', guide: '字节跳动面向海外推出的 AI 助手，支持多国语言与特色语音包。' },
     { id: 'kl_int', name: 'Kling AI Global', description: '可灵官方国际版，面向全球创作者开放。', icon: '🎬', url: 'https://klingai.org/', tag: '国外网站-需要梯子工具', category: 'international', guide: '快手可灵的全球版本，让全球用户体验极致的视频生成技术。' }
-  ];
-
-  const generatedTools: PaintingTool[] = [];
-  const categories: PaintingTool['category'][] = ['domestic', 'international', 'video', 'drawing', 'prompt', 'reverse', 'model', 'utility', 'watermark', 'dubbing'];
-  const emojis = ['🚀', '✨', '🌈', '🔥', '⚡', '💎', '🎨', '🎬', '🎙️', '🧬', '🔮', '🧩', '🧪', '🔭', '🛰️', '🕹️', '📟', '📀', '💡', '🔔', '🔋', '📡', '🛡️', '⚔️', '🗝️', '🧠', '🦁', '🦉', '🦋'];
-  
-  const usedNames = new Set<string>();
-
-  // 确保每个分类都有 100+ 条内容
-  categories.forEach(cat => {
-    let catCount = 0;
-    const catPrefix = cat === 'domestic' ? '国产' : (cat === 'international' ? '国际' : '超级');
-    
-    while (catCount < 110) {
-      const name = `${catPrefix} AI ${cat.toUpperCase()} ${catCount + 1}`;
-      if (!usedNames.has(name)) {
-        usedNames.add(name);
-        const icon = emojis[Math.floor(Math.random() * emojis.length)];
-        const isDomestic = cat === 'domestic' || Math.random() > 0.6;
-        
-        generatedTools.push({
-          id: `gen_${cat}_${catCount}`,
-          name: name,
-          description: `这是专注于 ${cat} 领域的第 ${catCount + 1} 款专业 AI 创作工具。`,
-          icon: icon,
-          url: `https://ai-search-directory.com/tool/${cat}/${catCount}`,
-          tag: isDomestic ? '国内网站' : '国外网站-需要梯子工具',
-          category: cat,
-          guide: `访问该工具官网，开启您的 ${cat} 创作之旅。`
-        });
-        catCount++;
-      }
-    }
-  });
-
-  return [...topTools, ...generatedTools];
-};
-
-export const PAINTING_TOOLS: PaintingTool[] = generate1000Tools();
+];
 
 export const THEME_CONFIG: Record<AppTheme, {
   bgClass: string;
