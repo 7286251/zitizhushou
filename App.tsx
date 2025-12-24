@@ -19,8 +19,8 @@ import Typewriter from './components/Typewriter';
 const themes = Object.values(AppTheme);
 
 const App: React.FC = () => {
-  // 默认主题设置为手绘卡通马红底皮肤
-  const [theme, setTheme] = useState<AppTheme>(AppTheme.CARTOON_HORSE_RED);
+  // 默认主题恢复为 2026 新年红
+  const [theme, setTheme] = useState<AppTheme>(AppTheme.NEW_YEAR_2026);
   const [mode, setMode] = useState<AppMode>('clothing_keywords');
 
   const config = THEME_CONFIG[theme];
@@ -122,40 +122,70 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${config.bgClass} flex flex-col overflow-hidden`} style={getBgStyle()}>
-      {/* Cartoon Horse Red Theme Extra Decoration */}
+      
+      {/* Cartoon Horse Red Theme Extra Decoration - 手绘重绘皮肤 */}
       {theme === AppTheme.CARTOON_HORSE_RED && (
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-           <div className="absolute -left-20 -bottom-20 md:left-10 md:bottom-10 opacity-40 rotate-12 scale-150 md:scale-100">
-             <svg width="400" height="400" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="100" cy="100" r="80" stroke="white" strokeWidth="4" />
-                <circle cx="70" cy="80" r="25" fill="white" stroke="black" strokeWidth="4" />
-                <circle cx="130" cy="80" r="25" fill="white" stroke="black" strokeWidth="4" />
-                <circle cx="70" cy="80" r="8" fill="black" className="animate-ping" />
-                <circle cx="130" cy="80" r="8" fill="black" className="animate-ping" />
-                <path d="M60 20 L80 40 M90 15 L100 45 M110 10 L120 40 M140 25 L130 50" stroke="white" strokeWidth="6" strokeLinecap="round" />
-                <ellipse cx="100" cy="140" rx="30" ry="20" fill="white" stroke="black" strokeWidth="4" />
-                <circle cx="90" cy="140" r="4" fill="black" />
-                <circle cx="110" cy="140" r="4" fill="black" />
+           {/* SVG Filter for Hand-drawn effect */}
+           <svg className="hidden">
+             <filter id="handDrawn">
+               <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+               <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
+             </filter>
+           </svg>
+
+           {/* 潮流动感文字 - 错落排版 */}
+           <div className="absolute top-[12%] left-[5%] md:left-[10%] rotate-[-8deg] z-10 group">
+              <div className="text-8xl md:text-[12rem] font-black text-white drop-shadow-[15px_15px_0px_rgba(0,0,0,1)] tracking-tighter italic leading-none animate-wiggle">看啥！</div>
+           </div>
+           <div className="absolute top-[25%] right-[5%] md:right-[15%] rotate-[5deg] z-10">
+              <div className="text-7xl md:text-[10rem] font-black text-white drop-shadow-[15px_15px_0px_rgba(0,0,0,1)] tracking-tighter italic animate-bounce-slow">去搞钱</div>
+           </div>
+
+           {/* 夸张手绘马 - 表情重绘 */}
+           <div className="absolute -left-24 -bottom-24 md:left-4 md:bottom-4 opacity-40 md:opacity-100 scale-150 md:scale-100 transition-transform hover:scale-110" style={{ filter: 'url(#handDrawn)' }}>
+             <svg width="500" height="500" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* 潦草毛发背景 */}
+                <path d="M40 80 Q20 50 50 30 T100 20 T150 40 T170 100" stroke="white" strokeWidth="8" strokeLinecap="round" className="animate-pulse" />
+                
+                {/* 巨大圆睁的眼睛 */}
+                <circle cx="70" cy="85" r="30" fill="white" stroke="black" strokeWidth="6" />
+                <circle cx="135" cy="85" r="30" fill="white" stroke="black" strokeWidth="6" />
+                
+                {/* 瞳孔 - 动态圆睁感 */}
+                <circle cx="70" cy="85" r="12" fill="black" className="animate-ping" />
+                <circle cx="135" cy="85" r="12" fill="black" className="animate-ping" />
+                
+                {/* 凌乱睫毛/眉毛 */}
+                <path d="M50 45 L65 60 M75 40 L80 65 M125 45 L115 65 M145 40 L130 65" stroke="black" strokeWidth="4" strokeLinecap="round" />
+                
+                {/* 夸张的大嘴巴/口鼻 */}
+                <path d="M60 140 Q100 170 145 135" stroke="white" strokeWidth="10" strokeLinecap="round" fill="none" />
+                <ellipse cx="102" cy="145" rx="35" ry="25" fill="white" stroke="black" strokeWidth="5" />
+                <circle cx="90" cy="145" r="5" fill="black" />
+                <circle cx="114" cy="145" r="5" fill="black" />
+                
+                {/* 潦草胡须 */}
+                <path d="M30 130 L55 135 M25 150 L50 145 M170 130 L145 135 M175 150 L150 145" stroke="white" strokeWidth="4" strokeLinecap="round" />
              </svg>
            </div>
-           <div className="absolute top-[20%] right-[5%] md:right-[15%] flex flex-col items-center rotate-[10deg] animate-jelly">
-              <div className="text-6xl md:text-9xl font-black text-white drop-shadow-[8px_8px_0px_rgba(0,0,0,1)] tracking-tighter italic">看啥！</div>
-              <div className="text-5xl md:text-8xl font-black text-white drop-shadow-[8px_8px_0px_rgba(0,0,0,1)] tracking-tighter italic ml-20 -mt-4">去搞钱</div>
-           </div>
-           <div className="absolute top-1/2 left-1/4 text-white text-4xl opacity-50 animate-bounce">💰</div>
-           <div className="absolute top-1/3 left-1/3 text-white text-2xl opacity-50 animate-pulse">🔥</div>
-           <div className="absolute bottom-1/4 right-1/4 text-white text-5xl opacity-50 animate-bounce-slow">🚀</div>
+           
+           {/* 街头潮流背景元素 */}
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/5 font-black text-[20vw] italic pointer-events-none select-none">GET MONEY</div>
+           <div className="absolute top-[60%] left-1/4 text-white text-6xl opacity-30 animate-bounce">🧧</div>
+           <div className="absolute top-1/3 left-1/2 text-white text-5xl opacity-20 animate-wiggle">💰</div>
+           <div className="absolute bottom-[15%] right-[10%] text-white text-[120px] opacity-10 font-black italic">2026</div>
         </div>
       )}
 
       <header className="pt-8 pb-2 text-center z-10 relative">
-        <div className="absolute top-4 right-4 flex items-center gap-3">
+        <div className="absolute top-4 right-4">
           <button 
             onClick={cycleTheme}
-            className={`group relative px-4 py-2 backdrop-blur-md border border-white/30 rounded-full text-xs font-black text-white transition-all flex items-center gap-2 shadow-lg active:scale-95 ${theme === AppTheme.CARTOON_HORSE_RED ? 'bg-black border-4 border-white' : 'bg-white/20'}`}
+            className={`group relative px-6 py-3 backdrop-blur-md border border-white/30 rounded-full text-sm font-black text-white transition-all flex items-center gap-3 shadow-2xl active:scale-90 ${theme === AppTheme.CARTOON_HORSE_RED ? 'bg-black border-4 border-white animate-pulse' : 'bg-white/20 hover:bg-white/40'}`}
           >
-            🎨 切换主题
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+            🎨 潮流皮肤
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
           </button>
         </div>
         <h1 className={`text-4xl md:text-5xl font-black tracking-wider mb-2 ${config.accentColor} ${config.titleEffect}`}>
@@ -184,10 +214,10 @@ const App: React.FC = () => {
           <button
             key={item.id}
             onClick={() => setMode(item.id as AppMode)}
-            className={`px-4 md:px-6 py-2 rounded-t-lg font-bold transition-all text-sm md:text-base whitespace-nowrap ${
+            className={`px-4 md:px-6 py-2.5 rounded-t-2xl font-black transition-all text-sm md:text-base whitespace-nowrap ${
               mode === item.id 
-                ? `${config.cardClass} border-b-0 translate-y-2 pb-4 ${theme === AppTheme.DARK_GRADIENT ? 'text-blue-400' : ''} ${theme === AppTheme.CARTOON_HORSE_RED ? 'border-b-0 -translate-y-1' : ''}` 
-                : `${theme === AppTheme.DARK_GRADIENT ? 'bg-slate-800/50 text-slate-400' : theme === AppTheme.CARTOON_HORSE_RED ? 'bg-black/20 text-white/50' : 'bg-white/50 text-gray-600'} hover:bg-white/80`
+                ? `bg-white ${theme === AppTheme.CARTOON_HORSE_RED ? 'border-[6px] border-black border-b-0 -translate-y-2' : 'border-b-0 translate-y-2 pb-5'} ${theme === AppTheme.DARK_GRADIENT ? 'text-blue-400' : ''}` 
+                : `${theme === AppTheme.DARK_GRADIENT ? 'bg-slate-800/50 text-slate-400' : theme === AppTheme.CARTOON_HORSE_RED ? 'bg-black/30 text-white/60' : 'bg-white/40 text-gray-600'} hover:bg-white/80`
             }`}
           >
             {item.label}
@@ -197,20 +227,27 @@ const App: React.FC = () => {
 
       <main className="flex-1 overflow-hidden flex justify-center px-4 pb-20">
         <div className="w-full h-full relative max-w-6xl">
-           {mode === 'cover_replica' && <CoverReplica theme={theme} />}
-           {mode === 'clothing_keywords' && <ClothingKeywords theme={theme} />}
-           {mode === 'extract_clothes' && <ExtractClothes theme={theme} />}
-           {mode === 'clothing_sales' && <ClothingSales theme={theme} />}
-           {mode === 'publisher' && <Publisher theme={theme} />}
-           {mode === 'creation' && <TextCreator theme={theme} />}
-           {mode === 'reverse' && <ImageReverse theme={theme} />}
-           {mode === 'wallpaper' && <WallpaperGallery theme={theme} />}
-           {mode === 'painting' && <PaintingTools theme={theme} />}
-           {mode === 'smart_agent' && <SmartAgent theme={theme} />}
-           {mode === 'storyboard' && <StoryboardCreator theme={theme} />}
-           {mode === 'grid_splitter' && <GridSplitter theme={theme} />}
+           <div className={`w-full h-full ${config.cardClass} overflow-hidden`}>
+             {mode === 'cover_replica' && <CoverReplica theme={theme} />}
+             {mode === 'clothing_keywords' && <ClothingKeywords theme={theme} />}
+             {mode === 'extract_clothes' && <ExtractClothes theme={theme} />}
+             {mode === 'clothing_sales' && <ClothingSales theme={theme} />}
+             {mode === 'publisher' && <Publisher theme={theme} />}
+             {mode === 'creation' && <TextCreator theme={theme} />}
+             {mode === 'reverse' && <ImageReverse theme={theme} />}
+             {mode === 'wallpaper' && <WallpaperGallery theme={theme} />}
+             {mode === 'painting' && <PaintingTools theme={theme} />}
+             {mode === 'smart_agent' && <SmartAgent theme={theme} />}
+             {mode === 'storyboard' && <StoryboardCreator theme={theme} />}
+             {mode === 'grid_splitter' && <GridSplitter theme={theme} />}
+           </div>
         </div>
       </main>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes wiggle { 0%, 100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(-5deg) scale(1.05); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+      ` }} />
     </div>
   );
 };
