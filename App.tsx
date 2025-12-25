@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppTheme, AppMode } from './types';
 import { THEME_CONFIG, APP_NOTICES } from './constants';
 import TextCreator from './components/TextCreator';
@@ -19,19 +19,20 @@ import Typewriter from './components/Typewriter';
 const themes = Object.values(AppTheme);
 
 const App: React.FC = () => {
-  // 默认主题恢复为 2026 新年红
-  const [theme, setTheme] = useState<AppTheme>(AppTheme.NEW_YEAR_2026);
-  const [mode, setMode] = useState<AppMode>('clothing_keywords');
+  // 默认主题升级为新拟态
+  const [theme, setTheme] = useState<AppTheme>(AppTheme.NEUMORPHISM);
+  const [mode, setMode] = useState<AppMode>('creation');
+  const [isThemePanelOpen, setIsThemePanelOpen] = useState(false);
 
   const config = THEME_CONFIG[theme];
 
-  const cycleTheme = () => {
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
-  };
-
   const getBgStyle = () => {
+    if (theme === AppTheme.NEUMORPHISM) {
+      return { backgroundColor: '#e0e5ec' };
+    }
+    if (theme === AppTheme.NEW_YEAR_2026) {
+      return { backgroundColor: '#0a0a0c' };
+    }
     if (theme === AppTheme.RETRO_DESKTOP) {
       return {
         backgroundImage: 'radial-gradient(#ff8a80 1px, transparent 1px), radial-gradient(#ff8a80 1px, transparent 1px)',
@@ -53,8 +54,12 @@ const App: React.FC = () => {
       };
     }
     if (theme === AppTheme.CARTOON_HORSE_RED) {
+      return { backgroundColor: '#e60012' };
+    }
+    if (theme === AppTheme.CHRISTMAS_FESTIVAL) {
       return {
-        backgroundColor: '#e60012'
+        backgroundColor: '#0a2e1f',
+        backgroundImage: 'radial-gradient(circle at center, #144d35 0%, #0a2e1f 100%)'
       };
     }
     return {}; 
@@ -62,191 +67,189 @@ const App: React.FC = () => {
 
   const typewriterTexts = [
     "提示词智能体写词大师",
-    "专注图文带货与分镜设计",
-    "作者：小渝児 | 2026马年大吉",
-    "爆款文案生成 | 一键同步发布"
+    "新拟态视觉纪元开启",
+    "已恢复 68 个顶级创作节点",
+    "作者：小渝児 | 2026马年大吉"
   ];
 
-  const NoticeBar = () => {
-    const isNewYear = theme === AppTheme.NEW_YEAR_2026;
-    const isDark = theme === AppTheme.DARK_GRADIENT;
-    const isHorseRed = theme === AppTheme.CARTOON_HORSE_RED;
-    
-    const labelBg = isNewYear 
-      ? "bg-gradient-to-r from-red-600 to-red-800 text-yellow-300" 
-      : isDark 
-        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" 
-        : isHorseRed
-          ? "bg-black text-white italic"
-          : "bg-blue-600 text-white";
-          
-    const barBg = isNewYear 
-      ? "bg-yellow-50/95 border-y border-yellow-200 shadow-sm" 
-      : isDark 
-        ? "bg-slate-800/90 border-y border-slate-700 shadow-lg" 
-        : isHorseRed
-          ? "bg-white border-y-4 border-black"
-          : "bg-white/90 border-y border-gray-100 shadow-sm";
-          
-    const textColor = isNewYear 
-      ? "text-red-900" 
-      : isDark 
-        ? "text-slate-300" 
-        : isHorseRed
-          ? "text-black font-black italic"
-          : "text-gray-600";
+  const isLightText = theme === AppTheme.NEW_YEAR_2026 || theme === AppTheme.DARK_GRADIENT || theme === AppTheme.CARTOON_HORSE_RED || theme === AppTheme.CHRISTMAS_FESTIVAL;
+  const isNeumorphism = theme === AppTheme.NEUMORPHISM;
 
-    return (
-      <div className={`w-full relative flex items-center h-10 overflow-hidden z-20 ${barBg} backdrop-blur-md`}>
-        <div className={`absolute left-0 top-0 bottom-0 px-4 md:px-6 flex items-center gap-2 z-30 font-black text-xs md:text-sm tracking-widest shadow-[10px_0_15px_rgba(0,0,0,0.05)] ${labelBg}`}>
-          <span className="animate-pulse">{isNewYear ? "🧨" : isDark ? "🛰️" : isHorseRed ? "🐴" : "📢"}</span>
-          最新公告
-          {!isHorseRed && <div className="absolute right-[-10px] top-0 bottom-0 w-[10px] bg-inherit [clip-path:polygon(0%_0%,100%_50%,0%_100%)]"></div>}
+  return (
+    <div className={`min-h-screen transition-all duration-700 ${config.bgClass} flex flex-col overflow-hidden`} style={getBgStyle()}>
+      
+      {/* 圣诞雪花粒子动效 */}
+      {theme === AppTheme.CHRISTMAS_FESTIVAL && (
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+           {[...Array(30)].map((_, i) => (
+             <div 
+               key={i} 
+               className="absolute text-white/20 text-xl animate-[bounce_15s_infinite]"
+               style={{ 
+                 left: `${Math.random() * 100}%`, 
+                 top: `${Math.random() * 100}%`,
+                 animationDelay: `${Math.random() * 8}s`,
+                 fontSize: `${Math.random() * 20 + 10}px`
+               }}
+             >
+               ❄️
+             </div>
+           ))}
         </div>
-        <div className="flex-1 ml-[110px] md:ml-[140px] h-full flex items-center overflow-hidden">
-          <div className="flex animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused] whitespace-nowrap items-center h-full">
+      )}
+
+      {/* 主标题栏 */}
+      <header className="pt-10 pb-4 text-center z-10 relative">
+        <div className="absolute top-6 right-6">
+          <button 
+            onClick={() => setIsThemePanelOpen(true)}
+            className={`group flex items-center gap-3 px-6 py-3 rounded-full font-black shadow-2xl transition-all active:scale-90 border-2 ${
+              isNeumorphism 
+                ? 'bg-[#e0e5ec] text-[#44474b] border-none shadow-[6px_6px_12px_#bebebe,-6px_-6px_12px_#ffffff]' 
+                : theme === AppTheme.CHRISTMAS_FESTIVAL 
+                  ? 'bg-[#5c0a0a] text-[#f7e4b5] border-[#c5a059]' 
+                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+            }`}
+          >
+            <span className="text-lg">{config.icon}</span>
+            <span className="text-sm tracking-widest">皮肤中心</span>
+          </button>
+        </div>
+        <h1 className={`text-4xl md:text-6xl font-black tracking-tighter mb-2 ${config.accentColor} ${config.titleEffect}`}>
+          小渝児 AI 创作工场
+        </h1>
+        <div className={`text-lg md:text-xl font-bold opacity-80 ${isLightText ? 'text-white/60' : 'text-[#44474b]/60'} h-8 mb-2`}>
+          <Typewriter texts={typewriterTexts} typeSpeed={100} deleteSpeed={40} pauseDuration={2500} />
+        </div>
+      </header>
+
+      {/* 公告栏 */}
+      <div className={`w-full relative flex items-center h-12 overflow-hidden z-20 ${isNeumorphism ? 'bg-[#e0e5ec] shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]' : theme === AppTheme.CHRISTMAS_FESTIVAL ? 'bg-[#5c0a0a]/30 border-y border-[#c5a059]/20' : 'bg-white/5 border-y border-white/5'} backdrop-blur-3xl`}>
+        <div className={`absolute left-0 top-0 bottom-0 px-6 flex items-center gap-2 z-30 font-black text-xs md:text-sm tracking-widest ${isNeumorphism ? 'bg-[#e0e5ec] text-[#44474b] shadow-[4px_0px_8px_#bebebe]' : 'bg-blue-600 text-white'}`}>
+           <span className="animate-bounce">⚡</span> 实时动态
+        </div>
+        <div className="flex-1 ml-[120px] h-full flex items-center overflow-hidden">
+          <div className="flex animate-marquee hover:[animation-play-state:paused] whitespace-nowrap items-center h-full">
             {APP_NOTICES.concat(APP_NOTICES).map((notice, i) => (
-              <span key={i} className={`px-12 text-xs md:text-sm font-bold flex items-center h-full ${textColor}`}>
-                <span className="mr-2 text-blue-500 opacity-30">/ /</span>
+              <span key={i} className={`px-12 text-xs font-bold flex items-center h-full ${isLightText ? 'text-white/60' : 'text-[#44474b]/60'}`}>
                 {notice}
               </span>
             ))}
           </div>
         </div>
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-inherit to-transparent pointer-events-none z-10"></div>
       </div>
-    );
-  };
 
-  const isLightText = theme === AppTheme.NEW_YEAR_2026 || theme === AppTheme.DARK_GRADIENT || theme === AppTheme.CARTOON_HORSE_RED;
+      {/* 侧边主题中心 (抽屉模式) */}
+      {isThemePanelOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-end animate-[fadeIn_0.3s_ease-out]">
+           <div className="absolute inset-0" onClick={() => setIsThemePanelOpen(false)}></div>
+           <div className={`w-full max-w-sm h-full shadow-2xl p-8 flex flex-col relative animate-[slideIn_0.4s_cubic-bezier(0.16,1,0.3,1)] ${isNeumorphism ? 'bg-[#e0e5ec]' : 'bg-[#1a1a20]'}`}>
+              <div className={`flex justify-between items-center mb-10 border-b pb-6 ${isNeumorphism ? 'border-gray-300' : 'border-white/5'}`}>
+                 <div>
+                   <h3 className={`text-2xl font-black italic tracking-tighter ${isNeumorphism ? 'text-[#44474b]' : 'text-white'}`}>THEME HUB</h3>
+                   <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${isNeumorphism ? 'text-[#44474b]/40' : 'text-white/30'}`}>视觉风格切换中心</p>
+                 </div>
+                 <button onClick={() => setIsThemePanelOpen(false)} className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all ${isNeumorphism ? 'bg-[#e0e5ec] shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] text-[#44474b]' : 'bg-white/5 text-white/40 hover:bg-white/10'}`}>&times;</button>
+              </div>
 
-  return (
-    <div className={`min-h-screen transition-colors duration-500 ${config.bgClass} flex flex-col overflow-hidden`} style={getBgStyle()}>
-      
-      {/* Cartoon Horse Red Theme Extra Decoration - 手绘重绘皮肤 */}
-      {theme === AppTheme.CARTOON_HORSE_RED && (
-        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-           {/* SVG Filter for Hand-drawn effect */}
-           <svg className="hidden">
-             <filter id="handDrawn">
-               <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
-               <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
-             </filter>
-           </svg>
-
-           {/* 潮流动感文字 - 错落排版 */}
-           <div className="absolute top-[12%] left-[5%] md:left-[10%] rotate-[-8deg] z-10 group">
-              <div className="text-8xl md:text-[12rem] font-black text-white drop-shadow-[15px_15px_0px_rgba(0,0,0,1)] tracking-tighter italic leading-none animate-wiggle">看啥！</div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
+                 {themes.map(t => {
+                   const tConf = THEME_CONFIG[t];
+                   const isActive = theme === t;
+                   return (
+                     <button 
+                       key={t}
+                       onClick={() => { setTheme(t); setIsThemePanelOpen(false); }}
+                       className={`w-full group p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${
+                         isActive 
+                          ? isNeumorphism 
+                            ? 'bg-[#e0e5ec] border-none shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]' 
+                            : 'bg-blue-600 border-blue-400 shadow-[0_0_30px_rgba(37,99,235,0.3)] scale-[1.02]' 
+                          : isNeumorphism 
+                            ? 'bg-[#e0e5ec] border-none shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:scale-[1.01]' 
+                            : 'bg-white/5 border-white/5 hover:border-white/20'
+                       }`}
+                     >
+                       <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-inner ${isActive ? 'bg-white/10' : 'bg-black/10 group-hover:bg-black/20'}`}>
+                         {tConf.icon}
+                       </div>
+                       <div className="text-left flex-1">
+                          <div className={`text-sm font-black ${isActive ? (isNeumorphism ? 'text-blue-600' : 'text-white') : (isNeumorphism ? 'text-[#44474b]' : 'text-white/60')}`}>{tConf.name}</div>
+                          <div className={`text-[10px] font-bold ${isActive ? (isNeumorphism ? 'text-blue-600/40' : 'text-white/50') : (isNeumorphism ? 'text-[#44474b]/30' : 'text-white/20')}`}>MODE: {t.toUpperCase()}</div>
+                       </div>
+                       {isActive && <div className={`w-2 h-2 rounded-full animate-ping ${isNeumorphism ? 'bg-blue-600' : 'bg-white'}`}></div>}
+                     </button>
+                   );
+                 })}
+              </div>
            </div>
-           <div className="absolute top-[25%] right-[5%] md:right-[15%] rotate-[5deg] z-10">
-              <div className="text-7xl md:text-[10rem] font-black text-white drop-shadow-[15px_15px_0px_rgba(0,0,0,1)] tracking-tighter italic animate-bounce-slow">去搞钱</div>
-           </div>
-
-           {/* 夸张手绘马 - 表情重绘 */}
-           <div className="absolute -left-24 -bottom-24 md:left-4 md:bottom-4 opacity-40 md:opacity-100 scale-150 md:scale-100 transition-transform hover:scale-110" style={{ filter: 'url(#handDrawn)' }}>
-             <svg width="500" height="500" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* 潦草毛发背景 */}
-                <path d="M40 80 Q20 50 50 30 T100 20 T150 40 T170 100" stroke="white" strokeWidth="8" strokeLinecap="round" className="animate-pulse" />
-                
-                {/* 巨大圆睁的眼睛 */}
-                <circle cx="70" cy="85" r="30" fill="white" stroke="black" strokeWidth="6" />
-                <circle cx="135" cy="85" r="30" fill="white" stroke="black" strokeWidth="6" />
-                
-                {/* 瞳孔 - 动态圆睁感 */}
-                <circle cx="70" cy="85" r="12" fill="black" className="animate-ping" />
-                <circle cx="135" cy="85" r="12" fill="black" className="animate-ping" />
-                
-                {/* 凌乱睫毛/眉毛 */}
-                <path d="M50 45 L65 60 M75 40 L80 65 M125 45 L115 65 M145 40 L130 65" stroke="black" strokeWidth="4" strokeLinecap="round" />
-                
-                {/* 夸张的大嘴巴/口鼻 */}
-                <path d="M60 140 Q100 170 145 135" stroke="white" strokeWidth="10" strokeLinecap="round" fill="none" />
-                <ellipse cx="102" cy="145" rx="35" ry="25" fill="white" stroke="black" strokeWidth="5" />
-                <circle cx="90" cy="145" r="5" fill="black" />
-                <circle cx="114" cy="145" r="5" fill="black" />
-                
-                {/* 潦草胡须 */}
-                <path d="M30 130 L55 135 M25 150 L50 145 M170 130 L145 135 M175 150 L150 145" stroke="white" strokeWidth="4" strokeLinecap="round" />
-             </svg>
-           </div>
-           
-           {/* 街头潮流背景元素 */}
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/5 font-black text-[20vw] italic pointer-events-none select-none">GET MONEY</div>
-           <div className="absolute top-[60%] left-1/4 text-white text-6xl opacity-30 animate-bounce">🧧</div>
-           <div className="absolute top-1/3 left-1/2 text-white text-5xl opacity-20 animate-wiggle">💰</div>
-           <div className="absolute bottom-[15%] right-[10%] text-white text-[120px] opacity-10 font-black italic">2026</div>
         </div>
       )}
 
-      <header className="pt-8 pb-2 text-center z-10 relative">
-        <div className="absolute top-4 right-4">
-          <button 
-            onClick={cycleTheme}
-            className={`group relative px-6 py-3 backdrop-blur-md border border-white/30 rounded-full text-sm font-black text-white transition-all flex items-center gap-3 shadow-2xl active:scale-90 ${theme === AppTheme.CARTOON_HORSE_RED ? 'bg-black border-4 border-white animate-pulse' : 'bg-white/20 hover:bg-white/40'}`}
-          >
-            🎨 潮流皮肤
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
-          </button>
-        </div>
-        <h1 className={`text-4xl md:text-5xl font-black tracking-wider mb-2 ${config.accentColor} ${config.titleEffect}`}>
-          小渝児创作工场
-        </h1>
-        <div className={`text-lg md:text-xl font-mono opacity-90 ${isLightText ? 'text-[#fffcf5]' : 'text-gray-600'} h-8 mb-2`}>
-          <Typewriter texts={typewriterTexts} typeSpeed={100} deleteSpeed={30} pauseDuration={2500} />
-        </div>
-      </header>
-
-      <NoticeBar />
-
-      <nav className="flex justify-center gap-2 md:gap-4 px-4 mb-2 z-10 flex-wrap overflow-x-auto no-scrollbar pt-4">
+      {/* 主导航 */}
+      <nav className="flex justify-center gap-2 md:gap-4 px-6 mb-4 z-10 flex-wrap pt-8 pb-2 overflow-x-auto no-scrollbar scroll-smooth">
         {[
-          { id: 'cover_replica', label: '📸 封面复刻' },
-          { id: 'clothing_keywords', label: '🧥 服装关键词' },
-          { id: 'extract_clothes', label: '✂️ 提取衣服' },
-          { id: 'clothing_sales', label: '👗 图文带货' },
+          { id: 'creation', label: '✍️ 艺术造字' },
+          { id: 'painting', label: '🛠️ 工具合集' },
           { id: 'publisher', label: '🚀 图文发布' },
-          { id: 'creation', label: '✍️ 艺术字' },
-          { id: 'storyboard', label: '🎬 分镜生成' },
-          { id: 'grid_splitter', label: '🧩 九宫格切图' },
-          { id: 'reverse', label: '🔍 反推' },
-          { id: 'painting', label: '🛠️ 工具' }
+          { id: 'storyboard', label: '🎬 电影分镜' },
+          { id: 'clothing_keywords', label: '🧥 服装咒语' },
+          { id: 'grid_splitter', label: '🧩 智能切图' },
+          { id: 'cover_replica', label: '📸 封面复刻' },
+          { id: 'extract_clothes', label: '✂️ 提取衣服' },
+          { id: 'reverse', label: '🔍 以图反推' }
         ].map(item => (
           <button
             key={item.id}
             onClick={() => setMode(item.id as AppMode)}
-            className={`px-4 md:px-6 py-2.5 rounded-t-2xl font-black transition-all text-sm md:text-base whitespace-nowrap ${
+            className={`px-5 py-2.5 rounded-2xl font-black transition-all text-xs md:text-sm whitespace-nowrap relative group ${
               mode === item.id 
-                ? `bg-white ${theme === AppTheme.CARTOON_HORSE_RED ? 'border-[6px] border-black border-b-0 -translate-y-2' : 'border-b-0 translate-y-2 pb-5'} ${theme === AppTheme.DARK_GRADIENT ? 'text-blue-400' : ''}` 
-                : `${theme === AppTheme.DARK_GRADIENT ? 'bg-slate-800/50 text-slate-400' : theme === AppTheme.CARTOON_HORSE_RED ? 'bg-black/30 text-white/60' : 'bg-white/40 text-gray-600'} hover:bg-white/80`
+                ? isNeumorphism 
+                    ? 'text-blue-600 shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff]' 
+                    : (isLightText ? 'text-white bg-white/10' : 'text-slate-900 bg-white shadow-xl') 
+                : isNeumorphism 
+                    ? 'text-[#44474b]/60 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:text-[#44474b]' 
+                    : (isLightText ? 'text-white/30 hover:text-white hover:bg-white/5' : 'text-slate-400 hover:text-slate-600')
             }`}
           >
             {item.label}
+            {mode === item.id && !isNeumorphism && (
+              <div className={`absolute bottom-[-1px] left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full ${isLightText ? 'bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]' : 'bg-slate-900'}`}></div>
+            )}
           </button>
         ))}
       </nav>
 
-      <main className="flex-1 overflow-hidden flex justify-center px-4 pb-20">
-        <div className="w-full h-full relative max-w-6xl">
-           <div className={`w-full h-full ${config.cardClass} overflow-hidden`}>
-             {mode === 'cover_replica' && <CoverReplica theme={theme} />}
-             {mode === 'clothing_keywords' && <ClothingKeywords theme={theme} />}
-             {mode === 'extract_clothes' && <ExtractClothes theme={theme} />}
-             {mode === 'clothing_sales' && <ClothingSales theme={theme} />}
-             {mode === 'publisher' && <Publisher theme={theme} />}
-             {mode === 'creation' && <TextCreator theme={theme} />}
-             {mode === 'reverse' && <ImageReverse theme={theme} />}
-             {mode === 'wallpaper' && <WallpaperGallery theme={theme} />}
+      {/* 主内容区域 */}
+      <main className="flex-1 overflow-hidden flex justify-center px-4 pb-12">
+        <div className="w-full h-full relative max-w-7xl">
+           <div className={`w-full h-full ${config.cardClass} overflow-hidden shadow-2xl transition-all duration-700`}>
              {mode === 'painting' && <PaintingTools theme={theme} />}
-             {mode === 'smart_agent' && <SmartAgent theme={theme} />}
+             {mode === 'creation' && <TextCreator theme={theme} />}
+             {mode === 'clothing_keywords' && <ClothingKeywords theme={theme} />}
+             {mode === 'publisher' && <Publisher theme={theme} />}
              {mode === 'storyboard' && <StoryboardCreator theme={theme} />}
              {mode === 'grid_splitter' && <GridSplitter theme={theme} />}
+             {mode === 'cover_replica' && <CoverReplica theme={theme} />}
+             {mode === 'extract_clothes' && <ExtractClothes theme={theme} />}
+             {mode === 'reverse' && <ImageReverse theme={theme} />}
+             {mode === 'wallpaper' && <WallpaperGallery theme={theme} />}
+             {mode === 'smart_agent' && <SmartAgent theme={theme} />}
            </div>
         </div>
       </main>
 
+      <footer className={`h-12 border-t flex items-center justify-center z-10 ${isLightText ? 'bg-black/20 border-white/5' : isNeumorphism ? 'bg-[#e0e5ec] border-gray-300 shadow-[inset_0px_10px_10px_-10px_#bebebe]' : 'bg-white border-slate-100'} backdrop-blur-md`}>
+         <p className={`text-[10px] font-black uppercase tracking-[0.5em] ${isLightText ? 'text-white/20' : 'text-[#44474b]/20'}`}>Future Terminal · Alpha v4.0 · 小渝児 · 版权所有</p>
+      </footer>
+
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes wiggle { 0%, 100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(-5deg) scale(1.05); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.1); }
       ` }} />
     </div>
   );

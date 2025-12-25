@@ -26,7 +26,9 @@ export interface PaintingTool {
 }
 
 export enum AppTheme {
+  NEUMORPHISM = 'neumorphism',
   NEW_YEAR_2026 = 'new_year_2026',
+  CHRISTMAS_FESTIVAL = 'christmas_festival',
   RETRO_DESKTOP = 'retro_desktop',
   PINK_PLUSH = 'pink_plush',
   DOPAMINE = 'dopamine',
