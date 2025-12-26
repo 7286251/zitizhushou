@@ -17,27 +17,44 @@ export interface PaintingTool {
   name: string;
   description: string;
   icon: string;
-  url: string; // Web URL
-  scheme?: string; // App Protocol Scheme
-  tag?: string; // Status/Region tags
-  isNew?: boolean; // New badge
-  guide?: string; // Usage Tutorial
-  category: 'video' | 'drawing' | 'prompt' | 'reverse' | 'model' | 'utility' | 'watermark' | 'dubbing' | 'domestic' | 'international'; 
+  url: string; 
+  tag?: string; 
+  isNew?: boolean; 
+  category: 'image' | 'video' | 'office' | 'agent' | 'chat' | 'coding' | 'design' | 'audio' | 'search' | 'dev' | 'study' | 'train' | 'eval' | 'detect' | 'prompt'; 
 }
 
 export enum AppTheme {
   NEUMORPHISM = 'neumorphism',
-  NEW_YEAR_2026 = 'new_year_2026',
-  CHRISTMAS_FESTIVAL = 'christmas_festival',
-  RETRO_DESKTOP = 'retro_desktop',
-  PINK_PLUSH = 'pink_plush',
-  DOPAMINE = 'dopamine',
   NEO_BRUTALISM = 'neo_brutalism',
-  DARK_GRADIENT = 'dark_gradient',
-  CARTOON_HORSE_RED = 'cartoon_horse_red',
+  INFLATABLE = 'inflatable',
+  CUTE = 'cute',
+  STICKER = 'sticker'
 }
 
-export type AppMode = 'creation' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_sales' | 'extract_clothes' | 'clothing_keywords' | 'cover_replica';
+export type AppMode = 'art_text' | 'christmas_product_director' | 'ugc_strategist' | 'sora_director' | 'clothing_director' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_keywords' | 'cover_replica' | 'video_director' | 'storyboard_workflow' | 'sk2_director';
+
+export interface StoryboardItem {
+  sequenceNumber: number;
+  name: string;
+  imagePrompt: string;
+  videoPrompt: string;
+  duihua?: string;
+}
+
+export interface UgcScriptItem {
+  timeRange: string;
+  title: string;
+  visual: string;
+  audio_zh: string;
+  audio_en?: string;
+  emotion: string;
+}
+
+export interface CharacterDesign {
+  roleName: string;
+  appearance: string;
+  castingPrompt: string;
+}
 
 export interface PromptResult {
   text: string;
@@ -48,10 +65,6 @@ export interface ImageAnalysisResult {
   fileName: string;
   chinesePrompt: string;
   englishPrompt: string;
-}
-
-export interface StoryboardConfig {
-  shots: string[]; // Array of 9 shot types
 }
 
 export type PlatformType = 'xhs' | 'douyin' | 'kuaishou' | 'channels';
