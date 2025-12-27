@@ -64,7 +64,6 @@ export const THEME_CONFIG: Record<AppTheme, {
   }
 };
 
-// 预设选项定义
 export const DIRECTOR_PRESETS = {
   FILM_GENRES: ['科幻赛博', '王家卫港风', '宫崎骏治愈', '黑色电影', '好莱坞商业', '法式浪漫', '纪录片写实'],
   XMAS_MOODS: ['温馨壁炉', '户外飘雪', '节日派对', '孤独治愈', '奢侈礼赠', '梦幻童话'],
@@ -74,6 +73,9 @@ export const DIRECTOR_PRESETS = {
 };
 
 export const PAINTING_TOOLS: PaintingTool[] = [
+  // 新收录置顶工具
+  { id: 'digen_ai', name: 'Digen AI', description: '下一代 AI 视频生成，支持 Sora 级物理特性与超长 15s+ 连贯生成。', icon: '⚡', url: 'https://digen.ai/sora?replicate=1766758415386391147_493ecb63-c4d1-4e1a-8f86-9dfa4a720539&seconds=15', tag: '2026 · 旗舰', category: 'video', isNew: true, isLatest: true },
+
   // 图像工具 (12)
   { id: 'mj_1', name: 'Midjourney', description: '全球顶尖 AI 艺术生成引擎，5.0 质感。', icon: '⛵', url: 'https://www.midjourney.com/', tag: '国外 · 顶流', category: 'image', isNew: true },
   { id: 'jm_1', name: '即梦 AI', description: '字节出品，国内最强 AI 绘画与视频生成。', icon: '🌈', url: 'https://jimeng.jianying.com/', tag: '国内 · 顶流', category: 'image', isNew: true },

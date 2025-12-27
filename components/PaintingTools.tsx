@@ -48,7 +48,14 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
         tool.description.toLowerCase().includes(lowerTerm)
       );
     }
-    return tools.sort((a, b) => (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1));
+    // 排序逻辑：isLatest 置顶，其次 isNew，最后按原有顺序
+    return tools.sort((a, b) => {
+      if (a.isLatest && !b.isLatest) return -1;
+      if (!a.isLatest && b.isLatest) return 1;
+      if (a.isNew && !b.isNew) return -1;
+      if (!a.isNew && b.isNew) return 1;
+      return 0;
+    });
   }, [activeCategory, searchTerm]);
 
   const displayedTools = allFilteredTools.slice(0, visibleCount);
@@ -100,22 +107,34 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
             <div 
               key={tool.id} 
               onClick={() => handleOpenTool(tool.url)}
-              className="group relative rounded-[2.2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col h-[280px] bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
+              className={`group relative rounded-[2.2rem] overflow-hidden transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col h-[280px] bg-white border shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] ${tool.isLatest ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-100'}`}
             >
+              {/* 最新收录高亮效果 */}
+              {tool.isLatest && (
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none z-0"></div>
+              )}
+
               <div className="relative p-8 flex flex-col h-full z-10">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 bg-gray-50 border border-gray-100">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 border ${tool.isLatest ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-100'}`}>
                     {tool.icon}
                   </div>
-                  {tool.isNew && (
-                    <span className="text-[10px] px-3 py-1 rounded-full font-black italic animate-pulse bg-blue-600 text-white shadow-lg">
-                      NEW
-                    </span>
-                  )}
+                  <div className="flex flex-col gap-1 items-end">
+                    {tool.isLatest && (
+                      <span className="text-[10px] px-3 py-1 rounded-full font-black italic bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg animate-bounce">
+                        新收录
+                      </span>
+                    )}
+                    {tool.isNew && !tool.isLatest && (
+                      <span className="text-[10px] px-3 py-1 rounded-full font-black italic animate-pulse bg-gray-900 text-white shadow-lg">
+                        NEW
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="font-black text-xl mb-2 transition-colors text-gray-900 group-hover:text-blue-600">
+                  <h3 className={`font-black text-xl mb-2 transition-colors group-hover:text-blue-600 ${tool.isLatest ? 'text-blue-700' : 'text-gray-900'}`}>
                     {tool.name}
                   </h3>
                   <p className="text-xs line-clamp-2 leading-relaxed font-medium text-gray-500">
@@ -124,10 +143,10 @@ const PaintingTools: React.FC<Props> = ({ theme }) => {
                 </div>
 
                 <div className="mt-auto flex items-center justify-between">
-                   <span className="text-[9px] px-3 py-1 rounded-lg font-bold uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100">
+                   <span className={`text-[9px] px-3 py-1 rounded-lg font-bold uppercase tracking-widest border ${tool.isLatest ? 'bg-blue-600 text-white border-transparent' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
                     {tool.tag}
                    </span>
-                   <div className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-gray-900 text-white group-hover:bg-blue-600 shadow-md">
+                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-md ${tool.isLatest ? 'bg-blue-600 text-white' : 'bg-gray-900 text-white group-hover:bg-blue-600'}`}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                    </div>
                 </div>

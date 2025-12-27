@@ -27,6 +27,48 @@ const fileToGenerativePart = async (file: File) => {
 };
 
 /**
+ * 视频内容深度提取与爆款策略生成
+ */
+export const extractVideoContent = async (file: File): Promise<any> => {
+  const ai = getAiClient();
+  const videoPart = await fileToGenerativePart(file);
+  const prompt = `你是一位顶尖的视频内容分析专家与跨平台短视频运营专家。请分析上传的视频并提取/生成以下内容：
+  1. 视频中的文字内容（包括对话、关键字幕或视觉文字）。
+  2. BGM 描述（识别到的曲名、风格或氛围）。
+  3. 为【小红书】、【抖音】、【视频号】三个平台分别生成对应的：
+     - 爆款标题
+     - 吸引力极强的正文文案
+     - 精准的热门话题/Hashtags
+  4. 提供三组针对视频内容的“爆款封面”设计方案建议。
+  
+  请务必返回 JSON 格式，结构如下：
+  {
+    "extractedText": "...",
+    "bgmInfo": "...",
+    "platforms": {
+      "xhs": { "title": "...", "content": "...", "hashtags": ["...", "..."] },
+      "douyin": { "title": "...", "content": "...", "hashtags": ["...", "..."] },
+      "channels": { "title": "...", "content": "...", "hashtags": ["...", "..."] }
+    },
+    "coverIdeas": ["方案一...", "方案二...", "方案三..."]
+  }`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-pro-preview",
+      contents: { parts: [videoPart, { text: prompt }] },
+      config: {
+        responseMimeType: "application/json"
+      }
+    });
+    return JSON.parse(response.text || "{}");
+  } catch (error) {
+    console.error("Video content extraction failed:", error);
+    throw error;
+  }
+};
+
+/**
  * 生成艺术字提示词（中英双语）
  */
 export const generateArtPrompt = async (text1: string, text2: string, text3: string, styleName: string, customStyle: string): Promise<{ zh: string, en: string }> => {

@@ -22,6 +22,7 @@ import UgcStrategist from './components/UgcStrategist';
 import ChristmasProductDirector from './components/ChristmasProductDirector';
 import TextCreator from './components/TextCreator';
 import TimeDisplay from './components/TimeDisplay';
+import VideoExtractor from './components/VideoExtractor';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<AppTheme>(AppTheme.NEUMORPHISM);
@@ -30,15 +31,16 @@ const App: React.FC = () => {
   const config = THEME_CONFIG[theme];
 
   const typewriterTexts = [
-    "艺术字智能体 · 提示词专家",
-    "2026 旗舰级皮肤引擎已就位",
-    "让创意在美学中爆发",
-    "新拟态 / 新粗野 / 膨胀风 / 可爱风 / 贴纸风"
+    "🐎 2026 丙午马年 · 祝您龙马精神，万象更新",
+    "✨ 艺术字智能体：深度优化 2026 贺岁提示词引擎",
+    "🚀 网站升级：已全面适配 2026 旗舰级 4K 视觉工作流",
+    "🎨 让创意如骏马奔腾，在 2026 绽放无限美学灵感"
   ];
 
   const renderContent = () => {
     switch (mode) {
       case 'art_text': return <TextCreator theme={theme} />;
+      case 'video_extractor': return <VideoExtractor theme={theme} />;
       case 'christmas_product_director': return <ChristmasProductDirector theme={theme} />;
       case 'ugc_strategist': return <UgcStrategist theme={theme} />;
       case 'sora_director': return <SoraDirector theme={theme} />;
@@ -61,6 +63,7 @@ const App: React.FC = () => {
 
   const navItems = [
     { id: 'art_text', label: '🎨 艺术造字', icon: '✍️' },
+    { id: 'video_extractor', label: '🎬 视频提取', icon: '📽️' },
     { id: 'christmas_product_director', label: '🎄 圣诞爆款', icon: '🎁' },
     { id: 'video_director', label: '🎬 电影分镜', icon: '📽️' },
     { id: 'storyboard', label: '🧩 九宫分镜', icon: '📦' },
@@ -132,8 +135,13 @@ const App: React.FC = () => {
 
         {/* Header Section - Optimized for high visibility and responsiveness */}
         <header className="px-6 md:px-10 py-8 md:py-12 flex flex-col xl:flex-row xl:items-center justify-between gap-8 md:gap-12">
-          <div className={`text-3xl md:text-5xl lg:text-6xl font-black italic drop-shadow-2xl ${config.textClass} flex-1 leading-[1.1] max-w-full xl:max-w-4xl`}>
-            <Typewriter texts={typewriterTexts} typeSpeed={80} pauseDuration={2500} />
+          <div className={`text-3xl md:text-5xl lg:text-6xl font-black italic drop-shadow-2xl flex-1 leading-[1.1] max-w-full xl:max-w-4xl`}>
+            <Typewriter 
+              texts={typewriterTexts} 
+              typeSpeed={80} 
+              pauseDuration={2500} 
+              className="bg-gradient-to-r from-[#FF0000] via-[#FF8C00] to-[#FFD700] bg-clip-text text-transparent inline-block"
+            />
           </div>
           <div className="shrink-0 w-full xl:w-auto flex justify-center xl:justify-end">
             <TimeDisplay theme={theme} />
