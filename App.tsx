@@ -11,7 +11,6 @@ import GridSplitter from './components/GridSplitter';
 import Publisher from './components/Publisher';
 import ClothingKeywords from './components/ClothingKeywords';
 import CoverReplica from './components/CoverReplica';
-import Typewriter from './components/Typewriter';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import DirectorAgent from './components/DirectorAgent';
 import StoryboardWorkflow from './components/StoryboardWorkflow';
@@ -30,11 +29,12 @@ const App: React.FC = () => {
 
   const config = THEME_CONFIG[theme];
 
-  const typewriterTexts = [
+  const marqueeTexts = [
     "🐎 2026 丙午马年 · 祝您龙马精神，万象更新",
     "✨ 艺术字智能体：深度优化 2026 贺岁提示词引擎",
     "🚀 网站升级：已全面适配 2026 旗舰级 4K 视觉工作流",
-    "🎨 让创意如骏马奔腾，在 2026 绽放无限美学灵感"
+    "🎨 让创意如骏马奔腾，在 2026 绽放无限美学灵感",
+    ...APP_NOTICES
   ];
 
   const renderContent = () => {
@@ -122,26 +122,29 @@ const App: React.FC = () => {
       {/* 主内容区 */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
-        {/* 公告栏 */}
-        <div className={`h-12 flex items-center overflow-hidden border-b z-40 ${isNeoBrutalist ? 'bg-black border-white' : 'bg-white/30 border-white/20'}`}>
-          <div className="flex animate-marquee whitespace-nowrap items-center h-full">
-            {APP_NOTICES.concat(APP_NOTICES).map((notice, i) => (
-              <span key={i} className={`px-10 text-[10px] font-black tracking-widest ${isNeoBrutalist ? 'text-white' : 'text-gray-500'}`}>
-                {notice}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Header Section - Optimized for high visibility and responsiveness */}
-        <header className="px-6 md:px-10 py-8 md:py-12 flex flex-col xl:flex-row xl:items-center justify-between gap-8 md:gap-12">
-          <div className={`text-3xl md:text-5xl lg:text-6xl font-black italic drop-shadow-2xl flex-1 leading-[1.1] max-w-full xl:max-w-4xl`}>
-            <Typewriter 
-              texts={typewriterTexts} 
-              typeSpeed={80} 
-              pauseDuration={2500} 
-              className="bg-gradient-to-r from-[#FF0000] via-[#FF8C00] to-[#FFD700] bg-clip-text text-transparent inline-block"
-            />
+        {/* Header Section */}
+        <header className="px-6 md:px-10 py-6 flex flex-col xl:flex-row xl:items-center justify-between gap-6 overflow-hidden shrink-0">
+          <div className="flex-1 flex flex-col gap-3">
+             {/* 新设计的公告栏：采用黑色字体，小尺寸，同步皮肤主题 */}
+             <div className={`flex items-center h-12 overflow-hidden border-2 rounded-2xl px-4 transition-all duration-500 ${isNeoBrutalist ? 'border-black bg-white shadow-[6px_6px_0px_black]' : 'bg-white/60 border-white/20 backdrop-blur-xl shadow-sm'}`}>
+                <div className="shrink-0 flex items-center gap-2 mr-6 border-r border-black/10 pr-5">
+                   <span className="text-lg animate-wiggle">📢</span>
+                   <span className="font-black text-[11px] text-black whitespace-nowrap tracking-widest uppercase italic">系统公告</span>
+                </div>
+                <div className="flex-1 overflow-hidden relative flex items-center">
+                   <div className="flex animate-marquee whitespace-nowrap items-center">
+                      {[...marqueeTexts, ...marqueeTexts].map((text, i) => (
+                        <span key={i} className="px-10 text-[12px] font-bold text-black tracking-tight hover:text-blue-600 transition-colors cursor-default">
+                          {text}
+                        </span>
+                      ))}
+                   </div>
+                </div>
+             </div>
+             {/* 品牌副标题 */}
+             <p className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40 ml-2 ${config.textClass}`}>
+               Creative Intelligence Factory · 创意智能工厂
+             </p>
           </div>
           <div className="shrink-0 w-full xl:w-auto flex justify-center xl:justify-end">
             <TimeDisplay theme={theme} />
@@ -163,7 +166,7 @@ const App: React.FC = () => {
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .animate-marquee { animation: marquee 40s linear infinite; }
+        .animate-marquee { animation: marquee 50s linear infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
       ` }} />
     </div>
