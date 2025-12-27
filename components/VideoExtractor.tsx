@@ -10,39 +10,87 @@ interface Props {
 
 const VideoExtractor: React.FC<Props> = ({ theme }) => {
   const config = THEME_CONFIG[theme];
-  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<string>('');
   const [result, setResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'xhs' | 'douyin' | 'channels'>('xhs');
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * 从视频中提取关键帧
+   * 用于规避 API Payload 限制 (解除大小限制)
+   */
+  const captureFrames = async (videoUrl: string): Promise<string[]> => {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.src = videoUrl;
+      video.crossOrigin = 'anonymous';
+      video.muted = true;
+      video.play();
+
+      const frames: string[] = [];
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      video.onloadedmetadata = () => {
+        const duration = video.duration;
+        const interval = Math.max(1, duration / 12); // 提取 12 帧左右
+        let currentTime = 0;
+
+        video.onseeked = () => {
+          if (ctx) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            frames.push(canvas.toDataURL('image/jpeg', 0.8));
+          }
+
+          currentTime += interval;
+          if (currentTime < duration && frames.length < 15) {
+            video.currentTime = currentTime;
+          } else {
+            video.pause();
+            resolve(frames);
+          }
+        };
+
+        video.currentTime = 0.5; // 从第 0.5 秒开始第一帧
+      };
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('video/')) {
         alert('请上传视频文件');
         return;
       }
-      setVideoFile(file);
-      setVideoPreview(URL.createObjectURL(file));
+      
+      const url = URL.createObjectURL(file);
+      setVideoPreview(url);
       setResult(null);
-      // 自动开始识别 (用户要求自动式识别)
-      handleExtract(file);
-    }
-  };
-
-  const handleExtract = async (file: File) => {
-    setIsLoading(true);
-    try {
-      const data = await extractVideoContent(file);
-      setResult(data);
-    } catch (err) {
-      alert('识别失败，请检查文件大小或网络状态');
-    } finally {
-      setIsLoading(false);
+      setIsLoading(true);
+      
+      try {
+        setLoadingStep('正在提取视觉关键帧...');
+        const frames = await captureFrames(url);
+        
+        setLoadingStep('AI 深度内容拆解中...');
+        const data = await extractVideoContent(frames);
+        setResult(data);
+      } catch (err) {
+        console.error(err);
+        alert('识别失败，视频内容可能由于过大或编码问题无法解析。');
+      } finally {
+        setIsLoading(false);
+        setLoadingStep('');
+      }
     }
   };
 
@@ -58,7 +106,7 @@ const VideoExtractor: React.FC<Props> = ({ theme }) => {
     <div className={`p-6 md:p-10 h-full overflow-y-auto custom-scrollbar flex flex-col gap-8`}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h2 className={`text-4xl font-black italic tracking-tighter ${config.textClass}`}>
-          视频内容提取 <span className="text-xl not-italic opacity-50 ml-2 uppercase">SMART AI</span>
+          视频内容提取 <span className="text-xl not-italic opacity-50 ml-2 uppercase">SMART AI 2026</span>
         </h2>
         <div className="flex gap-2">
           {['xhs', 'douyin', 'channels'].map((tab) => (
@@ -89,6 +137,7 @@ const VideoExtractor: React.FC<Props> = ({ theme }) => {
           >
             {videoPreview ? (
               <video 
+                ref={videoRef}
                 src={videoPreview} 
                 controls 
                 className="w-full h-full object-cover rounded-[2.8rem]"
@@ -97,15 +146,17 @@ const VideoExtractor: React.FC<Props> = ({ theme }) => {
               <div className="text-center p-8">
                 <div className="text-7xl mb-6 group-hover:scale-110 transition-transform duration-500">🎬</div>
                 <h3 className="text-xl font-black mb-2">点击上传视频</h3>
-                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">支持 MP4, MOV, WEBM</p>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">不限大小 · 本地帧解析模式已开启</p>
               </div>
             )}
             
             {isLoading && (
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center z-10 text-white">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center z-10 text-white p-10 text-center">
                 <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"></div>
-                <p className="font-black text-xl italic animate-pulse">AI 正在深度拆解视频...</p>
-                <p className="text-[10px] mt-2 opacity-60">提取文字 · 识别 BGM · 策划爆款</p>
+                <p className="font-black text-2xl italic animate-pulse mb-2">{loadingStep}</p>
+                <p className="text-[10px] opacity-60 uppercase tracking-widest">
+                  正在通过 2026 旗舰级 4K 工作流 处理海量数据
+                </p>
               </div>
             )}
             <input 
@@ -124,7 +175,7 @@ const VideoExtractor: React.FC<Props> = ({ theme }) => {
               </h4>
               <p className="text-sm font-bold leading-relaxed">{result.bgmInfo}</p>
               <div className="pt-4 border-t border-black/5">
-                <h4 className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-3">提取的文字内容 (Transcript)</h4>
+                <h4 className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-3">画面文字提取 (Optical Text)</h4>
                 <div className="max-h-32 overflow-y-auto custom-scrollbar text-xs font-medium leading-relaxed italic text-gray-600">
                   {result.extractedText}
                 </div>
@@ -186,7 +237,7 @@ const VideoExtractor: React.FC<Props> = ({ theme }) => {
               <div className="h-full flex flex-col items-center justify-center opacity-20 text-center">
                 <div className="text-7xl mb-6 animate-pulse">📦</div>
                 <p className="font-black text-xs uppercase tracking-[0.2em]">等待上传识别</p>
-                <p className="text-[10px] mt-2 opacity-50">上传视频后，我们将为您全方位拆解内容</p>
+                <p className="text-[10px] mt-2 opacity-50">本地帧解析技术已解除 API 上传限制</p>
               </div>
             )}
           </div>

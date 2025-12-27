@@ -27,24 +27,33 @@ const fileToGenerativePart = async (file: File) => {
 };
 
 /**
- * 视频内容深度提取与爆款策略生成
+ * 视频内容深度提取与爆款策略生成 (优化版：支持多帧分析)
+ * 解除大小限制：通过发送关键帧序列而非原始视频流
  */
-export const extractVideoContent = async (file: File): Promise<any> => {
+export const extractVideoContent = async (frames: string[]): Promise<any> => {
   const ai = getAiClient();
-  const videoPart = await fileToGenerativePart(file);
-  const prompt = `你是一位顶尖的视频内容分析专家与跨平台短视频运营专家。请分析上传的视频并提取/生成以下内容：
-  1. 视频中的文字内容（包括对话、关键字幕或视觉文字）。
-  2. BGM 描述（识别到的曲名、风格或氛围）。
+  
+  // 将每一帧转换为 inlineData
+  const frameParts = frames.map(f => ({
+    inlineData: {
+      data: f.split(',')[1],
+      mimeType: 'image/jpeg'
+    }
+  }));
+
+  const prompt = `你是一位顶尖的视频内容分析专家与跨平台短视频运营专家。请分析我提供的这一组视频关键帧序列，并提取/生成以下内容：
+  1. 视频中的文字内容（识别画面中的文字字幕、标志或产品信息）。
+  2. 视频氛围与风格描述（基于画面色彩、构图分析）。
   3. 为【小红书】、【抖音】、【视频号】三个平台分别生成对应的：
      - 爆款标题
-     - 吸引力极强的正文文案
+     - 吸引力极强的正文文案（包含口语化表达与情绪价值）
      - 精准的热门话题/Hashtags
-  4. 提供三组针对视频内容的“爆款封面”设计方案建议。
+  4. 提供三组针对视频内容的“爆款封面”设计方案建议（描述画面构成、文案排版）。
   
   请务必返回 JSON 格式，结构如下：
   {
     "extractedText": "...",
-    "bgmInfo": "...",
+    "bgmInfo": "基于画面建议的配乐风格描述...",
     "platforms": {
       "xhs": { "title": "...", "content": "...", "hashtags": ["...", "..."] },
       "douyin": { "title": "...", "content": "...", "hashtags": ["...", "..."] },
@@ -56,7 +65,7 @@ export const extractVideoContent = async (file: File): Promise<any> => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
-      contents: { parts: [videoPart, { text: prompt }] },
+      contents: { parts: [...frameParts, { text: prompt }] },
       config: {
         responseMimeType: "application/json"
       }
