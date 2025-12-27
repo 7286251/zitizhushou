@@ -22,6 +22,7 @@ import ChristmasProductDirector from './components/ChristmasProductDirector';
 import TextCreator from './components/TextCreator';
 import TimeDisplay from './components/TimeDisplay';
 import VideoExtractor from './components/VideoExtractor';
+import BorderAgent from './components/BorderAgent';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<AppTheme>(AppTheme.NEUMORPHISM);
@@ -40,6 +41,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (mode) {
       case 'art_text': return <TextCreator theme={theme} />;
+      case 'border_agent': return <BorderAgent theme={theme} />;
       case 'video_extractor': return <VideoExtractor theme={theme} />;
       case 'christmas_product_director': return <ChristmasProductDirector theme={theme} />;
       case 'ugc_strategist': return <UgcStrategist theme={theme} />;
@@ -63,6 +65,7 @@ const App: React.FC = () => {
 
   const navItems = [
     { id: 'art_text', label: '🎨 艺术造字', icon: '✍️' },
+    { id: 'border_agent', label: '💍 百变边框', icon: '🎨' },
     { id: 'video_extractor', label: '🎬 视频提取', icon: '📽️' },
     { id: 'christmas_product_director', label: '🎄 圣诞爆款', icon: '🎁' },
     { id: 'video_director', label: '🎬 电影分镜', icon: '📽️' },
@@ -125,7 +128,6 @@ const App: React.FC = () => {
         {/* Header Section */}
         <header className="px-6 md:px-10 py-6 flex flex-col xl:flex-row xl:items-center justify-between gap-6 overflow-hidden shrink-0">
           <div className="flex-1 flex flex-col gap-3">
-             {/* 新设计的公告栏：采用黑色字体，小尺寸，同步皮肤主题 */}
              <div className={`flex items-center h-12 overflow-hidden border-2 rounded-2xl px-4 transition-all duration-500 ${isNeoBrutalist ? 'border-black bg-white shadow-[6px_6px_0px_black]' : 'bg-white/60 border-white/20 backdrop-blur-xl shadow-sm'}`}>
                 <div className="shrink-0 flex items-center gap-2 mr-6 border-r border-black/10 pr-5">
                    <span className="text-lg animate-wiggle">📢</span>
@@ -141,7 +143,6 @@ const App: React.FC = () => {
                    </div>
                 </div>
              </div>
-             {/* 品牌副标题 */}
              <p className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40 ml-2 ${config.textClass}`}>
                Creative Intelligence Factory · 创意智能工厂
              </p>

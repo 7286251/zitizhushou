@@ -32,7 +32,7 @@ export enum AppTheme {
   STICKER = 'sticker'
 }
 
-export type AppMode = 'art_text' | 'video_extractor' | 'christmas_product_director' | 'ugc_strategist' | 'sora_director' | 'clothing_director' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_keywords' | 'cover_replica' | 'video_director' | 'storyboard_workflow' | 'sk2_director';
+export type AppMode = 'art_text' | 'border_agent' | 'video_extractor' | 'christmas_product_director' | 'ugc_strategist' | 'sora_director' | 'clothing_director' | 'reverse' | 'wallpaper' | 'painting' | 'smart_agent' | 'storyboard' | 'grid_splitter' | 'publisher' | 'clothing_keywords' | 'cover_replica' | 'video_director' | 'storyboard_workflow' | 'sk2_director';
 
 export interface StoryboardItem {
   sequenceNumber: number;
