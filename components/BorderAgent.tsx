@@ -13,6 +13,7 @@ const BorderAgent: React.FC<Props> = ({ theme }) => {
   const [userInput, setUserInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [displayLang, setDisplayLang] = useState<'zh' | 'en'>('zh');
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -89,33 +90,68 @@ const BorderAgent: React.FC<Props> = ({ theme }) => {
             {result ? (
               <div className="animate-pop space-y-6 h-full flex flex-col">
                 <div className="flex justify-between items-center shrink-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-black/5 p-1 rounded-full">
+                      <button 
+                        onClick={() => setDisplayLang('zh')} 
+                        className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${displayLang === 'zh' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
+                      >
+                        中
+                      </button>
+                      <button 
+                        onClick={() => setDisplayLang('en')} 
+                        className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${displayLang === 'en' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
+                      >
+                        EN
+                      </button>
+                    </div>
                     <span className="bg-blue-600 text-white text-[9px] font-black px-3 py-1 rounded-full italic">{result.templateId}</span>
-                    <span className="text-[10px] font-black tracking-widest opacity-40 uppercase">{result.themeName}</span>
                   </div>
                   <button 
                     onClick={() => handleCopy(result.fullPrompt_en, 'main')}
                     className={`text-[10px] font-black px-5 py-2 rounded-full transition-all ${copyFeedback === 'main' ? 'bg-green-500 text-white shadow-lg' : config.buttonClass}`}
                   >
-                    {copyFeedback === 'main' ? '✨ 已复制词包' : '复制全套词包'}
+                    {copyFeedback === 'main' ? '✨ 已复制词包' : '复制词包'}
                   </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-5">
-                   <div className="space-y-2">
-                      <label className="text-[9px] font-black text-blue-600 uppercase">基础特征 · CORE</label>
-                      <p className="text-xs font-bold leading-relaxed opacity-80">{result.coreFeatures}</p>
+                   <div className="group relative space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[9px] font-black text-blue-600 uppercase">基础特征 · CORE</label>
+                        <button onClick={() => handleCopy(displayLang === 'zh' ? result.coreFeatures : result.coreFeatures_en, 'c1')} className="text-[9px] font-black opacity-30 hover:opacity-100 transition-opacity">
+                          {copyFeedback === 'c1' ? '已复制' : '复制'}
+                        </button>
+                      </div>
+                      <p className="text-xs font-bold leading-relaxed opacity-80">{displayLang === 'zh' ? result.coreFeatures : result.coreFeatures_en}</p>
                    </div>
-                   <div className="space-y-2">
-                      <label className="text-[9px] font-black text-purple-600 uppercase">主题装饰 · DECOR</label>
-                      <p className="text-xs font-bold leading-relaxed opacity-80">{result.decorations}</p>
+                   <div className="group relative space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[9px] font-black text-purple-600 uppercase">主题装饰 · DECOR</label>
+                        <button onClick={() => handleCopy(displayLang === 'zh' ? result.decorations : result.decorations_en, 'c2')} className="text-[9px] font-black opacity-30 hover:opacity-100 transition-opacity">
+                          {copyFeedback === 'c2' ? '已复制' : '复制'}
+                        </button>
+                      </div>
+                      <p className="text-xs font-bold leading-relaxed opacity-80">{displayLang === 'zh' ? result.decorations : result.decorations_en}</p>
                    </div>
-                   <div className="space-y-2">
-                      <label className="text-[9px] font-black text-pink-600 uppercase">配色与动态 · STYLE</label>
-                      <p className="text-xs font-bold leading-relaxed opacity-80">{result.colorPalette} / {result.dynamicEffects}</p>
+                   <div className="group relative space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[9px] font-black text-pink-600 uppercase">配色与动态 · STYLE</label>
+                        <button onClick={() => handleCopy(`${displayLang === 'zh' ? result.colorPalette : result.colorPalette_en} / ${displayLang === 'zh' ? result.dynamicEffects : result.dynamicEffects_en}`, 'c3')} className="text-[9px] font-black opacity-30 hover:opacity-100 transition-opacity">
+                          {copyFeedback === 'c3' ? '已复制' : '复制'}
+                        </button>
+                      </div>
+                      <p className="text-xs font-bold leading-relaxed opacity-80">
+                        {displayLang === 'zh' ? result.colorPalette : result.colorPalette_en} / {displayLang === 'zh' ? result.dynamicEffects : result.dynamicEffects_en}
+                      </p>
                    </div>
                    <div className="pt-4 border-t border-black/5">
-                      <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">MJ/SD 最终英文指令 (专业增强版)</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-[9px] font-black text-gray-400 uppercase">MJ/SD 最终英文指令 (专业增强版)</label>
+                        <button onClick={() => handleCopy(result.fullPrompt_en, 'c4')} className="text-[9px] font-black opacity-30 hover:opacity-100 transition-opacity">
+                          {copyFeedback === 'c4' ? '已复制' : '复制指令'}
+                        </button>
+                      </div>
                       <div className="p-4 bg-gray-900 text-gray-300 rounded-2xl text-[11px] font-mono leading-relaxed italic whitespace-pre-wrap">
                          {result.fullPrompt_en}
                       </div>
@@ -125,7 +161,7 @@ const BorderAgent: React.FC<Props> = ({ theme }) => {
             ) : (
               <div className="h-full flex flex-col items-center justify-center opacity-20 text-center">
                 <div className="text-7xl mb-6">💍</div>
-                <p className="font-black text-xs uppercase tracking-[0.2em]">等待主题输入</p>
+                <p className="font-black text-sm uppercase tracking-[0.2em]">等待主题输入</p>
                 <p className="text-[10px] mt-2 opacity-50 px-10 leading-loose">
                   输入任意主题，我们将基于 LOL 旗舰级 UI 风格<br/>
                   为你全自动化生成 16K 超高清梦幻边框指令

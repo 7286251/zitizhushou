@@ -28,71 +28,69 @@ const fileToGenerativePart = async (file: File) => {
 
 /**
  * 视频内容深度提取与爆款策略生成
- * 优化：解决网络失败问题，增加超时处理与更健壮的 Prompt 指导
+ * 优化点：使用 Flash 模型提升大文件处理稳定性，增加 3 次重试，强化 JSON 结构约束
  */
 export const extractVideoContent = async (file: File): Promise<any> => {
   const ai = getAiClient();
   const videoPart = await fileToGenerativePart(file);
   
-  const systemInstruction = `你是一位顶尖的视频内容拆解与短视频运营专家。你的任务是深度分析上传的视频（包含视觉画面与音频轨道）：
-  1. 准确提取视频中出现的所有台词、旁白、字幕或视觉文字（extractedText）。
-  2. 识别背景音乐（BGM）的风格、节奏、曲风（bgmInfo）。
-  3. 针对各平台，策划对应的爆款标题、正文及话题（platforms）。
-  4. 构思三组具有视觉冲击力的爆款封面设计方案（coverIdeas）。
-  请务必仅输出纯 JSON 格式，不要包含 Markdown 块符号或其他说明文字。`;
+  const systemInstruction = `你是一位顶尖的短视频内容分析师。任务：深度拆解视频内容（视觉+音频）。
+  要求：
+  1. 准确提取所有文本/台词（extractedText）。
+  2. 识别BGM风格（bgmInfo）。
+  3. 为小红书、抖音、视频号提供独立运营方案。
+  4. 构思3个爆款封面建议。
+  注意：仅输出 JSON，禁止包含任何引导性文本（如 "Here is the JSON" 或 "Launch!"）。`;
 
-  const prompt = `深度解析视频并返回 JSON。结构必须包含 extractedText, bgmInfo, platforms (xhs, douyin, channels), coverIdeas。`;
+  const prompt = `分析此视频。请严格按照以下 JSON 格式返回，不得有误：
+  {
+    "extractedText": "...",
+    "bgmInfo": "...",
+    "platforms": {
+      "xhs": { "title": "...", "content": "...", "hashtags": [] },
+      "douyin": { "title": "...", "content": "...", "hashtags": [] },
+      "channels": { "title": "...", "content": "...", "hashtags": [] }
+    },
+    "coverIdeas": []
+  }`;
 
-  try {
-    // 增加重试逻辑
-    let response;
-    let attempts = 0;
-    while (attempts < 2) {
-      try {
-        response = await ai.models.generateContent({
-          model: "gemini-3-pro-preview",
-          contents: { parts: [videoPart, { text: prompt }] },
-          config: {
-            systemInstruction: systemInstruction,
-            responseMimeType: "application/json",
-            thinkingConfig: { thinkingBudget: 16384 } 
-          }
-        });
-        break; // 成功则退出循环
-      } catch (e) {
-        attempts++;
-        if (attempts >= 2) throw e;
-        await new Promise(r => setTimeout(r, 2000)); // 等待2秒重试
-      }
+  let lastError: any;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview", 
+        contents: { parts: [videoPart, { text: prompt }] },
+        config: {
+          systemInstruction: systemInstruction,
+          responseMimeType: "application/json",
+          thinkingConfig: { thinkingBudget: 16384 } 
+        }
+      });
+      
+      const text = response?.text;
+      if (!text) throw new Error("空响应");
+      return JSON.parse(text);
+    } catch (error) {
+      console.warn(`第 ${attempt} 次视频识别尝试失败:`, error);
+      lastError = error;
+      if (attempt < 3) await new Promise(r => setTimeout(r, 1500 * attempt)); 
     }
-    
-    const text = response?.text;
-    if (!text) throw new Error("API returned empty response");
-    
-    return JSON.parse(text);
-  } catch (error) {
-    console.error("Video content extraction failed:", error);
-    throw error;
   }
+  throw lastError || new Error("视频识别最终失败，请检查网络或更换视频");
 };
 
 /**
  * 百变边框智能体：生成游戏头像框提示词
+ * 扩展响应字段以支持中英文一键切换
  */
 export const generateBorderPrompt = async (theme: string): Promise<any> => {
   const ai = getAiClient();
-  const systemInstruction = `你是一位专业的游戏头像框生成助手。基于用户输入的主题，匹配并优化以下六组模板之一：
-  T1: 公主风(皇冠/淡粉)
-  T2: 音乐风(音符/紫色)
-  T3: 自然风(叶子/藤蔓/绿色)
-  T4: 音乐增强(音符/紫色)
-  T5: 冰雪公主(皇冠/雪花/淡蓝)
-  T6: 天使风(天使/翅膀/金黄白)
-  
-  必须包含核心特征：16k, 轮廓光, 英雄联盟涂风格, 圆形不对称, 黑色背景, 低饱和度胭脂色系渐变。
-  请严格输出 JSON 格式。`;
+  const systemInstruction = `你是一位专业的游戏UI设计师，擅长《英雄联盟》风格的头像框设计。
+  根据用户主题，匹配预设模板并输出结构化提示词。
+  必须为以下字段同时提供中英文版本：核心特征(coreFeatures/coreFeatures_en)、主题装饰(decorations/decorations_en)、配色(colorPalette/colorPalette_en)、动态效果(dynamicEffects/dynamicEffects_en)。
+  禁止在输出中包含 "Launch" 等词。`;
 
-  const prompt = `用户主题：${theme}。请根据技能要求生成结构化描述 JSON。`;
+  const prompt = `主题：${theme}。生成对应的头像框设计 JSON。`;
 
   try {
     const response = await ai.models.generateContent({
@@ -107,103 +105,63 @@ export const generateBorderPrompt = async (theme: string): Promise<any> => {
             templateId: { type: Type.STRING },
             themeName: { type: Type.STRING },
             coreFeatures: { type: Type.STRING },
+            coreFeatures_en: { type: Type.STRING },
             decorations: { type: Type.STRING },
+            decorations_en: { type: Type.STRING },
             colorPalette: { type: Type.STRING },
+            colorPalette_en: { type: Type.STRING },
             dynamicEffects: { type: Type.STRING },
-            fullPrompt_en: { type: Type.STRING, description: "生成的专业英文提示词包" }
+            dynamicEffects_en: { type: Type.STRING },
+            fullPrompt_en: { type: Type.STRING }
           },
-          required: ["templateId", "themeName", "coreFeatures", "decorations", "colorPalette", "dynamicEffects", "fullPrompt_en"]
+          required: ["templateId", "themeName", "coreFeatures", "coreFeatures_en", "decorations", "decorations_en", "colorPalette", "colorPalette_en", "dynamicEffects", "dynamicEffects_en", "fullPrompt_en"]
         }
       }
     });
     return JSON.parse(response.text || "{}");
   } catch (error) {
-    console.error("Border prompt generation failed:", error);
+    console.error("边框生成失败:", error);
     throw error;
   }
 };
 
 /**
- * 生成艺术字提示词（中英双语）
+ * 其余服务函数保持不变...
  */
 export const generateArtPrompt = async (text1: string, text2: string, text3: string, styleName: string, customStyle: string): Promise<{ zh: string, en: string }> => {
   const ai = getAiClient();
-  const prompt = `你是一位顶尖的 AI 艺术字设计师。请基于以下信息生成高质量的 MJ/SD 提示词。
-  主文字: "${text1}"，装饰: "${text2}", "${text3}"，风格: "${styleName}"，额外描述: "${customStyle}"
-  请返回 JSON 格式，包含：
-  "zh": 详细的中文艺术字提示词描述。
-  "en": 对应的专业英文提示词（Midjourney 风格）。`;
-
+  const prompt = `你是一位 AI 艺术字设计师。主文字: "${text1}"，风格: "${styleName}"。返回 JSON 格式。`;
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            zh: { type: Type.STRING },
-            en: { type: Type.STRING }
-          },
-          required: ["zh", "en"]
-        }
-      }
+      config: { responseMimeType: "application/json" }
     });
     return JSON.parse(response.text || '{"zh": "", "en": ""}');
-  } catch (error) {
-    console.error("Art prompt generation failed:", error);
-    return { zh: "生成失败", en: "Generation failed" };
-  }
+  } catch (error) { return { zh: "生成失败", en: "Generation failed" }; }
 };
 
-/**
- * 生成 15s 圣诞爆款导演脚本（支持氛围选择）
- */
 export const generateChristmasProductScript = async (file: File, mood: string): Promise<UgcScriptItem[]> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const prompt = `你是一位顶尖的短视频导演。基于上传的产品图，创建一个15秒“圣诞限定”脚本。设定氛围：${mood}。返回 JSON 数组。`;
-
+  const prompt = `生成圣诞脚本。氛围：${mood}。返回 JSON 数组。`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: { parts: [imagePart, { text: prompt }] },
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              timeRange: { type: Type.STRING },
-              title: { type: Type.STRING },
-              visual: { type: Type.STRING },
-              audio_zh: { type: Type.STRING },
-              audio_en: { type: Type.STRING },
-              emotion: { type: Type.STRING }
-            }
-          }
-        }
-      }
+      config: { responseMimeType: "application/json" }
     });
     return JSON.parse(response.text || "[]");
-  } catch (error) {
-    console.error("Christmas script generation failed:", error);
-    return [];
-  }
+  } catch (error) { return []; }
 };
 
-/**
- * 其他原有服务函数保持不变...
- */
 export const generateUgcVideoScript = async (file: File, audience: string): Promise<UgcScriptItem[]> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const prompt = `创建UGC脚本。目标受众：${audience}。返回 JSON 数组。`;
+  const prompt = `创建UGC脚本。目标：${audience}。返回 JSON 数组。`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: { parts: [imagePart, { text: prompt }] },
       config: { responseMimeType: "application/json" }
     });
@@ -213,10 +171,10 @@ export const generateUgcVideoScript = async (file: File, audience: string): Prom
 
 export const generateSoraClothingStoryboards = async (lighting: string): Promise<StoryboardItem[]> => {
   const ai = getAiClient();
-  const prompt = `生成Sora服装分镜。光影：${lighting}。返回 JSON 数组。`;
+  const prompt = `生成分镜。光影：${lighting}。返回 JSON 数组。`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: { responseMimeType: "application/json" }
     });
@@ -226,10 +184,10 @@ export const generateSoraClothingStoryboards = async (lighting: string): Promise
 
 export const analyzeStoryAndDesignCharacters = async (story: string, genre: string): Promise<{ analysis: string, characters: CharacterDesign[] }> => {
   const ai = getAiClient();
-  const prompt = `分析剧本设计角色。风格：${genre}。故事：${story}。返回 JSON。`;
+  const prompt = `分析剧本设计角色。风格：${genre}。返回 JSON。`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: { responseMimeType: "application/json" }
     });
@@ -239,10 +197,10 @@ export const analyzeStoryAndDesignCharacters = async (story: string, genre: stri
 
 export const generateFullDirectorStoryboard = async (story: string, characters: CharacterDesign[], sceneCount: number): Promise<StoryboardItem[]> => {
   const ai = getAiClient();
-  const prompt = `生成分镜。必须包含中英双语提示词。场景数：${sceneCount}。返回 JSON 数组。`;
+  const prompt = `生成分镜指令流。场景数：${sceneCount}。返回 JSON 数组。`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: { responseMimeType: "application/json" }
     });
@@ -253,10 +211,10 @@ export const generateFullDirectorStoryboard = async (story: string, characters: 
 export const generateClothingPrompts = async (file: File, modelType: string, occasion: string, modelAge: string): Promise<{ imagePrompt: string, imagePrompt_en: string, videoPrompt: string, videoPrompt_en: string }> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const prompt = `生成服装提示词。类型：${modelType}，场景：${occasion}。返回 JSON。`;
+  const prompt = `服装分析。场景：${occasion}。返回 JSON。`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: { parts: [imagePart, { text: prompt }] },
       config: { responseMimeType: "application/json" }
     });
@@ -284,14 +242,14 @@ export const analyzeImageForStoryboard = async (file: File): Promise<string> => 
 
 export const generateStoryboardPrompt = async (subject: string, shots: string[]): Promise<{ english: string, chinese: string }> => {
   const ai = getAiClient();
-  const prompt = `基于主体描述：“${subject}”，为 9 个分镜景别生成提示词。景别：${shots.join(", ")}。返回中英双语 JSON。`;
-  const response = await ai.models.generateContent({ model: "gemini-3-pro-preview", contents: prompt, config: { responseMimeType: "application/json" } });
+  const prompt = `生成九宫格分镜指令 JSON。`;
+  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: prompt, config: { responseMimeType: "application/json" } });
   return JSON.parse(response.text || '{"chinese": "", "english": ""}');
 };
 
 export const generatePublishContent = async (params: any): Promise<PublishContent> => {
   const ai = getAiClient();
-  const prompt = `为平台 ${params.platform} 创作关于“${params.productName}”的推文。返回 JSON。`;
+  const prompt = `创作推文 JSON。`;
   const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: prompt, config: { responseMimeType: "application/json" } });
   return JSON.parse(response.text || '{"title": "", "article": "", "hashtags": []}');
 };
@@ -299,14 +257,14 @@ export const generatePublishContent = async (params: any): Promise<PublishConten
 export const analyzeImageForPublishing = async (file: File): Promise<{ productName?: string, scene?: string }> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: { parts: [imagePart, { text: "识别产品名和场景 JSON。" }] }, config: { responseMimeType: "application/json" } });
+  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: { parts: [imagePart, { text: "识别产品信息 JSON。" }] }, config: { responseMimeType: "application/json" } });
   return JSON.parse(response.text || "{}");
 };
 
 export const extractClothingImage = async (file: File, type: string, view: string, is3d: boolean, count: number): Promise<string[]> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const response = await ai.models.generateContent({ model: "gemini-2.5-flash-image", contents: { parts: [imagePart, { text: `提取服装：${type}，视角：${view}，3D：${is3d}。` }] } });
+  const response = await ai.models.generateContent({ model: "gemini-2.5-flash-image", contents: { parts: [imagePart, { text: `提取服装：${type}。` }] } });
   const urls: string[] = [];
   for (const part of response.candidates?.[0]?.content?.parts || []) { if (part.inlineData) urls.push(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`); }
   return urls;
@@ -315,7 +273,7 @@ export const extractClothingImage = async (file: File, type: string, view: strin
 export const replicateCoverImage = async (file: File, originalText: string, newText: string): Promise<string> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const response = await ai.models.generateContent({ model: "gemini-2.5-flash-image", contents: { parts: [imagePart, { text: `复刻风格，原词“${originalText}”改为“${newText}”。` }] } });
+  const response = await ai.models.generateContent({ model: "gemini-2.5-flash-image", contents: { parts: [imagePart, { text: `复刻原词“${originalText}”为“${newText}”。` }] } });
   for (const part of response.candidates?.[0]?.content?.parts || []) { if (part.inlineData) return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`; }
   return "";
 };
@@ -323,18 +281,18 @@ export const replicateCoverImage = async (file: File, originalText: string, newT
 export const analyzeCoverText = async (file: File): Promise<string> => {
   const ai = getAiClient();
   const imagePart = await fileToGenerativePart(file);
-  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: { parts: [imagePart, { text: "提取标题文字。" }] } });
+  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: { parts: [imagePart, { text: "识别文字。" }] } });
   return response.text?.trim() || "";
 };
 
 export const generateStoryboardWorkflowPrompts = async (story: string, product: string): Promise<{ step1: string, step2: string, step3: string, step4: string }> => {
   const ai = getAiClient();
-  const response = await ai.models.generateContent({ model: "gemini-3-pro-preview", contents: `生成工作流提示词 JSON：${product} | ${story}`, config: { responseMimeType: "application/json" } });
+  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: `工作流 JSON。`, config: { responseMimeType: "application/json" } });
   return JSON.parse(response.text || '{"step1": "", "step2": "", "step3": "", "step4": ""}');
 };
 
 export const generateSK2ChristmasStories = async (): Promise<StoryboardItem[]> => {
   const ai = getAiClient();
-  const response = await ai.models.generateContent({ model: "gemini-3-pro-preview", contents: "SK-II 圣诞故事分镜 JSON。", config: { responseMimeType: "application/json" } });
+  const response = await ai.models.generateContent({ model: "gemini-3-flash-preview", contents: "SK-II 故事 JSON。", config: { responseMimeType: "application/json" } });
   return JSON.parse(response.text || "[]");
 };

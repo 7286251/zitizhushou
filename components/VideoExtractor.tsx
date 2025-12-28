@@ -176,7 +176,15 @@ const VideoExtractor: React.FC<Props> = ({ theme }) => {
               </div>
               <p className="text-sm font-bold leading-relaxed">{result.bgmInfo}</p>
               <div className="pt-4 border-t border-black/5">
-                <h4 className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-3">提取的文字内容 (Transcript)</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-[10px] font-black opacity-40 uppercase tracking-widest">提取的文字内容 (Transcript)</h4>
+                  <button 
+                    onClick={() => handleCopy(result.extractedText, 'transcript')}
+                    className="text-[9px] font-black px-3 py-1 bg-white border border-black/10 rounded-full hover:bg-black hover:text-white transition-all"
+                  >
+                    {copyFeedback === 'transcript' ? '✨ 已复制' : '复制文字'}
+                  </button>
+                </div>
                 <div className="max-h-40 overflow-y-auto custom-scrollbar text-xs font-medium leading-relaxed italic text-gray-600 pr-2">
                   {result.extractedText}
                 </div>

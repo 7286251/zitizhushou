@@ -128,10 +128,11 @@ const App: React.FC = () => {
         {/* Header Section */}
         <header className="px-6 md:px-10 py-6 flex flex-col xl:flex-row xl:items-center justify-between gap-6 overflow-hidden shrink-0">
           <div className="flex-1 flex flex-col gap-3">
+             {/* 公告栏：确保黑色字体在所有皮肤下清晰 */}
              <div className={`flex items-center h-12 overflow-hidden border-2 rounded-2xl px-4 transition-all duration-500 ${isNeoBrutalist ? 'border-black bg-white shadow-[6px_6px_0px_black]' : 'bg-white/60 border-white/20 backdrop-blur-xl shadow-sm'}`}>
                 <div className="shrink-0 flex items-center gap-2 mr-6 border-r border-black/10 pr-5">
                    <span className="text-lg animate-wiggle">📢</span>
-                   <span className="font-black text-[11px] text-black whitespace-nowrap tracking-widest uppercase italic">系统公告</span>
+                   <span className="font-black text-[11px] text-black whitespace-nowrap tracking-widest uppercase italic">公告</span>
                 </div>
                 <div className="flex-1 overflow-hidden relative flex items-center">
                    <div className="flex animate-marquee whitespace-nowrap items-center">
